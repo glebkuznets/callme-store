@@ -1,0 +1,9 @@
+.DS_Store
+*.pyc
+__pycache__/
+*.log
+.tempmediaStorage/
+*.mov
+*.pdf
+process_media.py
+process_white_mockups.py

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CALL ME — CM-J01-HM</title>
+  <meta name="description" content="CALL ME CM-J01-HM. Ultra-minimalist techwear storefront.">
+  <link rel="stylesheet" href="styles.css?v=6">
+</head>
+<body class="stealth-mode">
+
+  <!-- Video Background Substrate (ACRONYM style) -->
+  <div class="video-bg-container">
+    <video src="assets/videos/video_1.mp4" autoplay loop muted playsinline class="video-bg active" id="bg-video-1"></video>
+    <video src="assets/videos/video_2.mp4" loop muted playsinline class="video-bg" id="bg-video-2"></video>
+    <video src="assets/videos/video_3.mp4" loop muted playsinline class="video-bg" id="bg-video-3"></video>
+    <video src="assets/videos/video_4.mp4" loop muted playsinline class="video-bg" id="bg-video-4"></video>
+    <canvas id="tv-glitch-canvas" class="tv-glitch-canvas"></canvas>
+    <div class="video-bg-overlay"></div>
+  </div>
+
+  <!-- Navigation Header -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="catalog.html" class="logo-link" id="logo-trigger">
+        <img src="assets/images/logo.png" alt="CALL ME Logo" class="logo-img">
+      </a>
+      <div class="cart-indicator" id="cart-btn">
+        CART [ 0 ]
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Store Split Grid -->
+  <main class="main-content">
+    
+    <!-- Left Column: Utilitarian Sticky Sidebar -->
+    <section class="product-sidebar">
+      
+      <div>
+        <div class="sidebar-header">
+          <div class="product-code" id="product-meta">COLLECTION: STEALS // CODE: CM-J01-HM // GEN-1</div>
+          <h1 class="product-title tech-font" id="product-price" style="margin-bottom: 24px;">$200</h1>
+        </div>
+
+        <!-- Sizing selection -->
+        <div class="size-section">
+          <div class="section-label" id="size-label">SELECT SIZE [EUR]</div>
+          <div class="sizes-grid" id="product-sizes-grid">
+            <button class="size-btn" data-size="S">S</button>
+            <button class="size-btn active" data-size="M">M</button>
+            <button class="size-btn" data-size="L">L</button>
+            <button class="size-btn" data-size="XL">XL</button>
+          </div>
+        </div>
+
+        <!-- Checkout Form -->
+        <div class="order-section">
+          <div class="section-label">ORDER / CHECKOUT</div>
+          <form class="checkout-form" id="order-form">
+            <div class="input-group">
+              <input type="text" class="input-field" placeholder="NAME / ИМЯ" required id="cust-name">
+            </div>
+            <div class="input-group">
+              <input type="tel" class="input-field" placeholder="PHONE / ТЕЛЕФОН" required id="cust-phone">
+            </div>
+            <div class="input-group">
+              <input type="text" class="input-field" placeholder="TELEGRAM / WHATSAPP" required id="cust-social">
+            </div>
+            <div class="input-group">
+              <input type="text" class="input-field" placeholder="ADDRESS / АДРЕС ДОСТАВКИ" required id="cust-address">
+            </div>
+            <button type="button" class="buy-button" id="add-to-cart-btn" style="background: transparent; color: var(--text-white); border: 1px solid var(--text-white); margin-bottom: 8px; margin-top: 10px;">
+              ADD TO CART / В КОРЗИНУ
+            </button>
+            <button type="submit" class="buy-button">
+              BUY NOW / ОФОРМИТЬ ЗАКАЗ
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Technical Specifications -->
+      <div class="specs-block">
+        <div class="section-label">SPECIFICATIONS</div>
+        <ul id="product-specs-list">
+          <li><span>FABRIC:</span> 380G/M² HEAVYWEIGHT FRENCH TERRY COTTON</li>
+          <li><span>FIT:</span> UNISEX TECHNICAL OVERSIZED SILHOUETTE</li>
+          <li><span>UTILITY:</span> DUAL HIDDEN ZIP-POCKETS IN KANGAROO POUCH</li>
+          <li><span>GRAPHIC:</span> SILKSCREEN PHONE BACK PRINT</li>
+          <li><span>DETAILS:</span> WHITE EMBROIDERY ON CHEST & HOOD</li>
+          <li><span>ORIGIN:</span> BALI Drop // LIMITED RUN</li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- Right Column: Vertical Studio/Product Photos Stack -->
+    <section class="media-column" id="product-media-column">
+      <div class="primary-photo-container">
+        <img src="assets/images/studio/studio_1.jpg" alt="CM-J01-HM FRONT VIEW" class="primary-photo" loading="lazy">
+      </div>
+      <div class="primary-photo-container">
+        <img src="assets/images/studio/studio_2.jpg" alt="CM-J01-HM FLATLAY POCKETS" class="primary-photo" loading="lazy">
+      </div>
+      <div class="primary-photo-container">
+        <img src="assets/images/studio/studio_3.jpg" alt="CM-J01-HM ZIPPER CLOSEUP" class="primary-photo" loading="lazy">
+      </div>
+      <div class="primary-photo-container">
+        <img src="assets/images/studio/studio_4.jpg" alt="CM-J01-HM HIDDEN STORAGE" class="primary-photo" loading="lazy">
+      </div>
+      <div class="primary-photo-container">
+        <img src="assets/images/studio/studio_5.jpg" alt="CM-J01-HM EMBROIDERY CLOSEUP" class="primary-photo" loading="lazy">
+      </div>
+      <div class="primary-photo-container">
+        <img src="assets/images/studio/studio_6.jpg" alt="CM-J01-HM BACKPRINT TEXTURE" class="primary-photo" loading="lazy">
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Section: Grid Gallery (Street / Lifestyle & Videos) - Visible only for Hoodie -->
+  <section class="gallery-section" id="product-gallery-section">
+    <div class="gallery-header">
+      <h2 class="gallery-title tech-font">STREET / LIFESTYLE & VIDEO REELS</h2>
+      <div class="tech-font" style="color: var(--text-gray); font-size: 11px;">ITEMS [10]</div>
+    </div>
+
+    <div class="gallery-grid">
+      <!-- Video 1 -->
+      <div class="gallery-item video-item">
+        <video src="assets/videos/call_me_01.mp4" loop playsinline class="gallery-video" id="video-1" poster="assets/images/lifestyle/lifestyle_2.jpg"></video>
+        <div class="video-play-overlay" onclick="togglePlay('video-1')">
+          <div class="play-symbol" id="symbol-video-1">PLAY</div>
+        </div>
+      </div>
+
+      <!-- Video 2 -->
+      <div class="gallery-item video-item">
+        <video src="assets/videos/callme_01_video.mp4" loop playsinline class="gallery-video" id="video-2" poster="assets/images/lifestyle/lifestyle_4.jpg"></video>
+        <div class="video-play-overlay" onclick="togglePlay('video-2')">
+          <div class="play-symbol" id="symbol-video-2">PLAY</div>
+        </div>
+      </div>
+
+      <!-- Lifestyle Images -->
+      <div class="gallery-item">
+        <img src="assets/images/lifestyle/lifestyle_1.jpg" alt="STREET SHOT 1" class="gallery-img" loading="lazy">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/lifestyle/lifestyle_2.jpg" alt="STREET SHOT 2" class="gallery-img" loading="lazy">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/lifestyle/lifestyle_3.jpg" alt="STREET SHOT 3" class="gallery-img" loading="lazy">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/lifestyle/lifestyle_4.jpg" alt="STREET SHOT 4" class="gallery-img" loading="lazy">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/lifestyle/lifestyle_5.jpg" alt="STREET SHOT 5" class="gallery-img" loading="lazy">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/lifestyle/lifestyle_6.jpg" alt="STREET SHOT 6" class="gallery-img" loading="lazy">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/lifestyle/lifestyle_7.jpg" alt="STREET SHOT 7" class="gallery-img" loading="lazy">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/lifestyle/lifestyle_8.jpg" alt="STREET SHOT 8" class="gallery-img" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Overlay Notification -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-box">
+      <h3 class="tech-font">ORDER CONFIRMED</h3>
+      <p class="success-desc">
+        Спасибо за заказ, <span id="success-buyer-name"></span>. Информация о заказе обработана. Подтвердите заказ по ссылке ниже.
+      </p>
+      <a href="" target="_blank" class="success-btn" id="tg-redirect-link">
+        CONFIRM IN TELEGRAM
+      </a>
+      <button class="size-btn" style="width: 100%; margin-top: 10px;" id="close-success-btn">
+        CLOSE
+      </button>
+    </div>
+  </div>
+
+  <!-- Canvas for Iridescent Glitch Cursor Trail -->
+  <canvas id="cursor-trail" class="cursor-trail"></canvas>
+
+  <script src="products_data.js?v=6"></script>
+  <script src="app.js?v=6"></script>
+</body>
+</html>
