@@ -367,39 +367,106 @@ a {
   color: var(--text-white);
 }
 
-/* Media Column (Right - Vertical photo stack) */
+/* Media Column (Right - Image Slider) */
 .media-column {
   padding: 40px;
   display: flex;
-  flex-direction: column;
-  gap: 32px;
+  justify-content: center;
   align-items: center;
   background: transparent;
-  overflow-y: auto;
 }
 
 @media (max-width: 968px) {
   .media-column {
-    padding: 24px 16px;
-    overflow-y: visible;
+    padding: 0;
   }
 }
 
-.primary-photo-container {
+.product-slider {
   width: 100%;
   max-width: 600px;
+  height: 70vh;
+  max-height: 800px;
   border: 1px solid var(--border-dark);
   background: #000;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.slider-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  background: #000;
 }
 
 .primary-photo {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  object-fit: cover;
-  transition: var(--transition-smooth);
+  object-fit: contain;
+  background: #000;
+}
+
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--border-dark);
+  color: var(--text-white);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.slider-arrow:hover {
+  background: var(--text-white);
+  color: #000;
+  border-color: var(--text-white);
+}
+
+.slider-arrow.prev {
+  left: 16px;
+}
+
+.slider-arrow.next {
+  right: 16px;
+}
+
+.slider-counter {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--text-gray);
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 4px 12px;
+  border: 1px solid var(--border-dark);
+  letter-spacing: 1px;
+  z-index: 10;
+  pointer-events: none;
 }
 
 /* ==========================================================================
@@ -778,12 +845,18 @@ body.stealth-mode .center-logo-container {
   }
 
   .media-column {
-    padding: 16px 12px;
-    gap: 16px;
+    padding: 0;
   }
 
-  .primary-photo-container {
-    max-width: 100%;
+  .product-slider {
+    height: 50vh;
+    max-height: 450px;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .slider-arrow {
+    display: none;
   }
 }
 

@@ -347,6 +347,64 @@ const init = () => {
     });
   };
 
+  const setupProductSlider = () => {
+    const slider = document.getElementById('product-slider');
+    const track = document.getElementById('slider-track');
+    const prevBtn = document.getElementById('slider-prev');
+    const nextBtn = document.getElementById('slider-next');
+    const counter = document.getElementById('slider-counter');
+    
+    if (!slider || !track) return;
+    
+    const slides = track.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentIndex = 0;
+    
+    const updateSlider = () => {
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      if (counter) {
+        const formattedIndex = String(currentIndex + 1).padStart(2, '0');
+        const formattedTotal = String(totalSlides).padStart(2, '0');
+        counter.textContent = `[ ${formattedIndex} // ${formattedTotal} ]`;
+      }
+    };
+    
+    const nextSlide = () => {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateSlider();
+    };
+    
+    const prevSlide = () => {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      updateSlider();
+    };
+    
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    
+    // Touch Swipe support
+    let startX = 0;
+    let isSwiping = false;
+    
+    slider.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      isSwiping = true;
+    }, { passive: true });
+    
+    slider.addEventListener('touchend', (e) => {
+      if (!isSwiping) return;
+      const endX = e.changedTouches[0].clientX;
+      const diffX = startX - endX;
+      
+      if (diffX > 50) {
+        nextSlide();
+      } else if (diffX < -50) {
+        prevSlide();
+      }
+      isSwiping = false;
+    }, { passive: true });
+  };
+
   const setupCartCheckout = () => {
     const form = document.getElementById('cart-checkout-form');
     if (!form) return;
@@ -478,6 +536,7 @@ const init = () => {
   updateCartBadge();
   renderCartItems();
   setupCartCheckout();
+  setupProductSlider();
 
   // ==========================================================================
   // Subtle Glitch Pixel Cursor Trail System

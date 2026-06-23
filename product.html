@@ -95,25 +95,24 @@
 
     </section>
 
-    <!-- Right Column: Vertical Studio/Product Photos Stack -->
+    <!-- Right Column: Horizontal Studio/Product Photos Slider -->
     <section class="media-column" id="product-media-column">
-      <div class="primary-photo-container">
-        <img src="assets/images/studio/studio_1.jpg" alt="CM-J01-HM FRONT VIEW" class="primary-photo" loading="lazy">
-      </div>
-      <div class="primary-photo-container">
-        <img src="assets/images/studio/studio_2.jpg" alt="CM-J01-HM FLATLAY POCKETS" class="primary-photo" loading="lazy">
-      </div>
-      <div class="primary-photo-container">
-        <img src="assets/images/studio/studio_3.jpg" alt="CM-J01-HM ZIPPER CLOSEUP" class="primary-photo" loading="lazy">
-      </div>
-      <div class="primary-photo-container">
-        <img src="assets/images/studio/studio_4.jpg" alt="CM-J01-HM HIDDEN STORAGE" class="primary-photo" loading="lazy">
-      </div>
-      <div class="primary-photo-container">
-        <img src="assets/images/studio/studio_5.jpg" alt="CM-J01-HM EMBROIDERY CLOSEUP" class="primary-photo" loading="lazy">
-      </div>
-      <div class="primary-photo-container">
-        <img src="assets/images/studio/studio_6.jpg" alt="CM-J01-HM BACKPRINT TEXTURE" class="primary-photo" loading="lazy">
+      <div class="product-slider" id="product-slider">
+        <button class="slider-arrow prev" id="slider-prev" aria-label="Previous Photo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <div class="slider-track" id="slider-track">
+          <div class="slide"><img src="assets/images/studio/studio_1.jpg" alt="CM-J01-HM FRONT VIEW" class="primary-photo"></div>
+          <div class="slide"><img src="assets/images/studio/studio_2.jpg" alt="CM-J01-HM FLATLAY POCKETS" class="primary-photo"></div>
+          <div class="slide"><img src="assets/images/studio/studio_3.jpg" alt="CM-J01-HM ZIPPER CLOSEUP" class="primary-photo"></div>
+          <div class="slide"><img src="assets/images/studio/studio_4.jpg" alt="CM-J01-HM HIDDEN STORAGE" class="primary-photo"></div>
+          <div class="slide"><img src="assets/images/studio/studio_5.jpg" alt="CM-J01-HM EMBROIDERY CLOSEUP" class="primary-photo"></div>
+          <div class="slide"><img src="assets/images/studio/studio_6.jpg" alt="CM-J01-HM BACKPRINT TEXTURE" class="primary-photo"></div>
+        </div>
+        <button class="slider-arrow next" id="slider-next" aria-label="Next Photo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7" /></svg>
+        </button>
+        <div class="slider-counter tech-font" id="slider-counter">[ 01 // 06 ]</div>
       </div>
     </section>
 
