@@ -201,7 +201,7 @@ const init = () => {
       e.preventDefault();
       document.body.classList.remove('stealth-mode');
       setTimeout(() => {
-        window.location.href = 'catalog.html';
+        window.location.href = 'product.html';
       }, 500);
     });
   }
