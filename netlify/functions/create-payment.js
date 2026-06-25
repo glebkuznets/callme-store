@@ -171,7 +171,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 200,
       headers: jsonHeaders,
-      body: JSON.stringify({ paymentUrl, invoiceId }),
+      body: JSON.stringify({ paymentUrl, invoiceId, tgConfigured: !!(tgBotToken && tgChatId) }),
     };
   } catch (error) {
     console.error('Error creating payment:', error);
