@@ -166,54 +166,117 @@
 
   </main>
 
-  <!-- Bottom Section: Grid Gallery (Street / Lifestyle & Videos) - Visible only for Hoodie -->
+  <!-- Bottom Section: Video Reels -->
   <section class="gallery-section" id="product-gallery-section">
     <div class="gallery-header">
-      <h2 class="gallery-title tech-font">STREET / LIFESTYLE & VIDEO REELS</h2>
-      <div class="tech-font" style="color: var(--text-gray); font-size: 11px;">ITEMS [10]</div>
+      <h2 class="gallery-title tech-font">VIDEO REELS</h2>
+      <div class="tech-font" style="color: var(--text-gray); font-size: 11px;">ITEMS [5]</div>
     </div>
 
-    <div class="gallery-grid">
-      <!-- Video 1 -->
-      <div class="gallery-item video-item">
-        <video src="assets/videos/call_me_01.mp4" loop playsinline class="gallery-video" id="video-1" poster="assets/images/lifestyle/lifestyle_2.jpg"></video>
-        <div class="video-play-overlay" onclick="togglePlay('video-1')">
-          <div class="play-symbol" id="symbol-video-1">PLAY</div>
+    <div class="reels-grid">
+      <!-- Reel 1 -->
+      <div class="reel-tile group playing muted" id="reel-tile-1">
+        <video class="reel-video" src="assets/videos/reels_1.mp4" autoplay loop muted playsinline></video>
+        <div class="reel-overlay">
+          <div></div>
+          <div class="reel-center-play">
+            <button class="reel-play-btn" aria-label="Play/Pause">
+              <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+            </button>
+          </div>
+          <div class="reel-bottom-bar">
+            <button class="reel-mute-btn" aria-label="Mute/Unmute">
+              <svg class="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM12 4L9.91 6.09 12 8.18V4zm-6.14.86L4.43 6.29 8.14 10H3v4h3l5 5v-6.14l4.63 4.63c-.68.52-1.43.9-2.26 1.09v2.06c1.37-.29 2.61-.98 3.59-1.91l2.3 2.3 1.41-1.41L5.86 4.86z" /></svg>
+              <svg class="icon-speaker" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" /></svg>
+            </button>
+            <span class="reel-label">V-01</span>
+          </div>
         </div>
       </div>
 
-      <!-- Video 2 -->
-      <div class="gallery-item video-item">
-        <video src="assets/videos/callme_01_video.mp4" loop playsinline class="gallery-video" id="video-2" poster="assets/images/lifestyle/lifestyle_4.jpg"></video>
-        <div class="video-play-overlay" onclick="togglePlay('video-2')">
-          <div class="play-symbol" id="symbol-video-2">PLAY</div>
+      <!-- Reel 2 -->
+      <div class="reel-tile group playing muted" id="reel-tile-2">
+        <video class="reel-video" src="assets/videos/reels_2.mp4" autoplay loop muted playsinline></video>
+        <div class="reel-overlay">
+          <div></div>
+          <div class="reel-center-play">
+            <button class="reel-play-btn" aria-label="Play/Pause">
+              <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+            </button>
+          </div>
+          <div class="reel-bottom-bar">
+            <button class="reel-mute-btn" aria-label="Mute/Unmute">
+              <svg class="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM12 4L9.91 6.09 12 8.18V4zm-6.14.86L4.43 6.29 8.14 10H3v4h3l5 5v-6.14l4.63 4.63c-.68.52-1.43.9-2.26 1.09v2.06c1.37-.29 2.61-.98 3.59-1.91l2.3 2.3 1.41-1.41L5.86 4.86z" /></svg>
+              <svg class="icon-speaker" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" /></svg>
+            </button>
+            <span class="reel-label">V-02</span>
+          </div>
         </div>
       </div>
 
-      <!-- Lifestyle Images -->
-      <div class="gallery-item">
-        <img src="assets/images/lifestyle/lifestyle_1.jpg" alt="STREET SHOT 1" class="gallery-img" loading="lazy">
+      <!-- Reel 3 -->
+      <div class="reel-tile group playing muted" id="reel-tile-3">
+        <video class="reel-video" src="assets/videos/reels_3.mp4" autoplay loop muted playsinline></video>
+        <div class="reel-overlay">
+          <div></div>
+          <div class="reel-center-play">
+            <button class="reel-play-btn" aria-label="Play/Pause">
+              <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+            </button>
+          </div>
+          <div class="reel-bottom-bar">
+            <button class="reel-mute-btn" aria-label="Mute/Unmute">
+              <svg class="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM12 4L9.91 6.09 12 8.18V4zm-6.14.86L4.43 6.29 8.14 10H3v4h3l5 5v-6.14l4.63 4.63c-.68.52-1.43.9-2.26 1.09v2.06c1.37-.29 2.61-.98 3.59-1.91l2.3 2.3 1.41-1.41L5.86 4.86z" /></svg>
+              <svg class="icon-speaker" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" /></svg>
+            </button>
+            <span class="reel-label">V-03</span>
+          </div>
+        </div>
       </div>
-      <div class="gallery-item">
-        <img src="assets/images/lifestyle/lifestyle_2.jpg" alt="STREET SHOT 2" class="gallery-img" loading="lazy">
+
+      <!-- Reel 4 -->
+      <div class="reel-tile group playing muted" id="reel-tile-4">
+        <video class="reel-video" src="assets/videos/reels_4.mp4" autoplay loop muted playsinline></video>
+        <div class="reel-overlay">
+          <div></div>
+          <div class="reel-center-play">
+            <button class="reel-play-btn" aria-label="Play/Pause">
+              <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+            </button>
+          </div>
+          <div class="reel-bottom-bar">
+            <button class="reel-mute-btn" aria-label="Mute/Unmute">
+              <svg class="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM12 4L9.91 6.09 12 8.18V4zm-6.14.86L4.43 6.29 8.14 10H3v4h3l5 5v-6.14l4.63 4.63c-.68.52-1.43.9-2.26 1.09v2.06c1.37-.29 2.61-.98 3.59-1.91l2.3 2.3 1.41-1.41L5.86 4.86z" /></svg>
+              <svg class="icon-speaker" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" /></svg>
+            </button>
+            <span class="reel-label">V-04</span>
+          </div>
+        </div>
       </div>
-      <div class="gallery-item">
-        <img src="assets/images/lifestyle/lifestyle_3.jpg" alt="STREET SHOT 3" class="gallery-img" loading="lazy">
-      </div>
-      <div class="gallery-item">
-        <img src="assets/images/lifestyle/lifestyle_4.jpg" alt="STREET SHOT 4" class="gallery-img" loading="lazy">
-      </div>
-      <div class="gallery-item">
-        <img src="assets/images/lifestyle/lifestyle_5.jpg" alt="STREET SHOT 5" class="gallery-img" loading="lazy">
-      </div>
-      <div class="gallery-item">
-        <img src="assets/images/lifestyle/lifestyle_6.jpg" alt="STREET SHOT 6" class="gallery-img" loading="lazy">
-      </div>
-      <div class="gallery-item">
-        <img src="assets/images/lifestyle/lifestyle_7.jpg" alt="STREET SHOT 7" class="gallery-img" loading="lazy">
-      </div>
-      <div class="gallery-item">
-        <img src="assets/images/lifestyle/lifestyle_8.jpg" alt="STREET SHOT 8" class="gallery-img" loading="lazy">
+
+      <!-- Reel 5 -->
+      <div class="reel-tile group playing muted" id="reel-tile-5">
+        <video class="reel-video" src="assets/videos/reels_5.mp4" autoplay loop muted playsinline></video>
+        <div class="reel-overlay">
+          <div></div>
+          <div class="reel-center-play">
+            <button class="reel-play-btn" aria-label="Play/Pause">
+              <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+            </button>
+          </div>
+          <div class="reel-bottom-bar">
+            <button class="reel-mute-btn" aria-label="Mute/Unmute">
+              <svg class="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM12 4L9.91 6.09 12 8.18V4zm-6.14.86L4.43 6.29 8.14 10H3v4h3l5 5v-6.14l4.63 4.63c-.68.52-1.43.9-2.26 1.09v2.06c1.37-.29 2.61-.98 3.59-1.91l2.3 2.3 1.41-1.41L5.86 4.86z" /></svg>
+              <svg class="icon-speaker" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" /></svg>
+            </button>
+            <span class="reel-label">V-05</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>

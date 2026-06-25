@@ -1415,6 +1415,84 @@ const init = () => {
     scheduleNextSwitch();
   }
 
+  // ==========================================================================
+  // Interactive 5-Video Reels Grid
+  // ==========================================================================
+  const initReels = () => {
+    const reelTiles = document.querySelectorAll('.reel-tile');
+    reelTiles.forEach(tile => {
+      const video = tile.querySelector('.reel-video');
+      const playBtn = tile.querySelector('.reel-play-btn');
+      const muteBtn = tile.querySelector('.reel-mute-btn');
+
+      if (!video) return;
+
+      // Initial state is playing and muted
+      tile.classList.add('playing');
+      tile.classList.add('muted');
+      tile.classList.remove('paused');
+      tile.classList.remove('unmuted');
+
+      // Attempt autoplay
+      video.play().catch(err => {
+        console.warn("Autoplay prevented for reel:", err);
+        tile.classList.remove('playing');
+        tile.classList.add('paused');
+      });
+
+      // Toggle Play/Pause on tile click
+      tile.addEventListener('click', (e) => {
+        // Prevent click if clicking the mute button or play button directly (handled separately)
+        if (e.target.closest('.reel-mute-btn') || e.target.closest('.reel-play-btn')) {
+          return;
+        }
+        
+        toggleReelPlay(tile, video);
+      });
+
+      // Toggle Play/Pause on central button click
+      if (playBtn) {
+        playBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleReelPlay(tile, video);
+        });
+      }
+
+      // Toggle Mute on button click
+      if (muteBtn) {
+        muteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          video.muted = !video.muted;
+          if (video.muted) {
+            tile.classList.remove('unmuted');
+            tile.classList.add('muted');
+          } else {
+            tile.classList.remove('muted');
+            tile.classList.add('unmuted');
+          }
+        });
+      }
+    });
+  };
+
+  const toggleReelPlay = (tile, video) => {
+    if (video.paused) {
+      video.play().then(() => {
+        tile.classList.remove('paused');
+        tile.classList.add('playing');
+      }).catch(console.error);
+    } else {
+      video.pause();
+      tile.classList.remove('playing');
+      tile.classList.add('paused');
+    }
+  };
+
+  // Run reels initialization if grid exists
+  if (document.querySelector('.reels-grid')) {
+    initReels();
+  }
+
   // --- AUTOMATED SCREENSHOT / TESTING AUTOFILLS ---
   const testParams = new URLSearchParams(window.location.search);
   if (testParams.get('test_add') === '1') {
