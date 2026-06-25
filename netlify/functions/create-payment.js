@@ -1,4 +1,39 @@
-const crypto = require('crypto');
+const https = require('https');
+
+// Helper function for version-agnostic HTTPS requests in Node.js
+function httpsRequest(url, options, postData) {
+  return new Promise((resolve, reject) => {
+    const req = https.request(url, options, (res) => {
+      let body = '';
+      res.on('data', (chunk) => {
+        body += chunk;
+      });
+      res.on('end', () => {
+        resolve({
+          ok: res.statusCode >= 200 && res.statusCode < 300,
+          statusCode: res.statusCode,
+          json: () => {
+            try {
+              return JSON.parse(body);
+            } catch (e) {
+              return { error: 'Invalid JSON', body };
+            }
+          },
+          text: () => body
+        });
+      });
+    });
+
+    req.on('error', (err) => {
+      reject(err);
+    });
+
+    if (postData) {
+      req.write(typeof postData === 'string' ? postData : JSON.stringify(postData));
+    }
+    req.end();
+  });
+}
 
 exports.handler = async (event, context) => {
   // Only allow POST requests
@@ -35,17 +70,16 @@ exports.handler = async (event, context) => {
       requestPayload.promoCode = promoCode;
     }
 
-    // Call Lava.top Public API (v3/invoice) to generate invoice contract
-    const lavaResponse = await globalThis.fetch('https://gate.lava.top/api/v3/invoice', {
+    // Call Lava.top Public API (v3/invoice) to generate invoice contract using our HTTPS helper
+    const lavaResponse = await httpsRequest('https://gate.lava.top/api/v3/invoice', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Api-Key': lavaApiKey
-      },
-      body: JSON.stringify(requestPayload)
-    });
+      }
+    }, requestPayload);
 
-    const lavaResult = await lavaResponse.json();
+    const lavaResult = lavaResponse.json();
 
     if (!lavaResponse.ok || !lavaResult.paymentUrl) {
       console.error('Lava.top API error response:', lavaResult);
@@ -80,12 +114,11 @@ exports.handler = async (event, context) => {
                           `▫️ PROMO CODE: ${promoCode || 'NONE'}\n\n` +
                           `▫️ PAYMENT LINK: ${paymentUrl}`;
 
-        // Fire-and-forget telegram notify
-        globalThis.fetch(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
+        // Fire-and-forget telegram notify using our HTTPS helper
+        httpsRequest(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: tgChatId, text: tgMessage })
-        }).catch(() => {});
+          headers: { 'Content-Type': 'application/json' }
+        }, { chat_id: tgChatId, text: tgMessage }).catch(() => {});
       } catch (tgErr) {
         console.warn("Failed to send telegram invoice notification:", tgErr);
       }

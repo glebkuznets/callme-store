@@ -552,7 +552,7 @@ const init = () => {
         qty: 1
       });
     }
-
+    saveCart();
   };
 
   function updateStepperButton() {
