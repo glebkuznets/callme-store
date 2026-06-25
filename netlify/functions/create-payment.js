@@ -12,81 +12,80 @@ exports.handler = async (event, context) => {
   try {
     const { items, totalUSD, name, email, phone, social, address } = JSON.parse(event.body);
 
-    if (!items || !totalUSD) {
+    if (!items || !totalUSD || !email) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Missing required parameters' }),
+        body: JSON.stringify({ error: 'Missing required parameters (items, totalUSD, or email)' }),
       };
     }
 
-    // Read environment variables (configured in Netlify dashboard)
-    const merchantId = process.env.AAIO_MERCHANT_ID;
-    const secretKey = process.env.AAIO_SECRET_KEY;
-    const exchangeRate = parseFloat(process.env.AAIO_USD_TO_RUB || '92.5'); // default rate
+    // Lava.top Configuration
+    const lavaApiKey = process.env.LAVA_API_KEY || 'DhqQfPXePVnHyHl5WX3EPDbu1pYxuWKDLmIzDCtH5cMZ0crVUwwkaFJnvWQjksvW';
+    // Offer ID created on Lava.top dashboard for the $240 hoodie
+    const offerId = process.env.LAVA_OFFER_ID || 'd9623c32-e760-45b0-ba30-a28a9baf97a9';
 
-    if (!merchantId || !secretKey) {
+    // Call Lava.top Public API (v3/invoice) to generate invoice contract
+    const lavaResponse = await globalThis.fetch('https://gate.lava.top/api/v3/invoice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-Key': lavaApiKey
+      },
+      body: JSON.stringify({
+        email: email,
+        offerId: offerId,
+        currency: 'USD'
+      })
+    });
+
+    const lavaResult = await lavaResponse.json();
+
+    if (!lavaResponse.ok || !lavaResult.paymentUrl) {
+      console.error('Lava.top API error response:', lavaResult);
       return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Payment gateway not configured on host server. Please set AAIO_MERCHANT_ID and AAIO_SECRET_KEY.' }),
+        statusCode: 400,
+        body: JSON.stringify({ 
+          error: 'Failed to create invoice with Lava.top.', 
+          details: lavaResult.message || JSON.stringify(lavaResult) 
+        }),
       };
     }
 
-    // Convert total USD to RUB (AAIO primary currency for cards/SBP)
-    const amountRUB = (totalUSD * exchangeRate).toFixed(2);
-    const currency = 'RUB';
-    const orderId = `CALLME-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const paymentUrl = lavaResult.paymentUrl;
+    const invoiceId = lavaResult.id;
 
-    // Build the signature string
-    // Format: SHA256(merchant_id:amount:currency:secret:order_id)
-    const signString = `${merchantId}:${amountRUB}:${currency}:${secretKey}:${orderId}`;
-    const sign = crypto
-      .createHash('sha256')
-      .update(signString)
-      .digest('hex');
-
-    // Create description of the order
-    const desc = items.map(item => `${item.name} (x${item.qty})`).join(', ');
-
-    // Build the redirect URL
-    const paymentUrl = `https://aaio.so/merchant/pay?` +
-      `merchant_id=${encodeURIComponent(merchantId)}&` +
-      `amount=${encodeURIComponent(amountRUB)}&` +
-      `currency=${encodeURIComponent(currency)}&` +
-      `order_id=${encodeURIComponent(orderId)}&` +
-      `sign=${encodeURIComponent(sign)}&` +
-      `desc=${encodeURIComponent(desc)}&` +
-      `lang=ru`;
-
-    // Also send an asynchronous telegram log notification to the seller if token is provided
+    // Send transaction log details to Telegram for the merchant
     const tgBotToken = process.env.TELEGRAM_BOT_TOKEN;
     const tgChatId = process.env.TELEGRAM_CHAT_ID;
     
     if (tgBotToken && tgChatId) {
       try {
         let itemsText = items.map((item, idx) => `${idx + 1}. ${item.name} // SIZE: ${item.size} // QTY: ${item.qty} // $${item.price * item.qty}`).join('\n');
-        const tgMessage = `🚨 NEW INVOICE GENERATED // AAIO\n\n` +
-                          `▫️ ORDER ID: ${orderId}\n` +
-                          `▫️ TOTAL: $${totalUSD} (~${amountRUB} RUB)\n` +
+        const tgMessage = `🚨 NEW INVOICE GENERATED // LAVA.TOP\n\n` +
+                          `▫️ INVOICE ID: ${invoiceId}\n` +
+                          `▫️ TOTAL: $${totalUSD}\n` +
                           `▫️ ITEMS:\n${itemsText}\n\n` +
                           `▫️ BUYER: ${name}\n` +
+                          `▫️ EMAIL: ${email}\n` +
                           `▫️ PHONE: ${phone}\n` +
                           `▫️ SOCIAL/TG: ${social}\n` +
-                          `▫️ ADDRESS: ${address}`;
+                          `▫️ ADDRESS: ${address}\n\n` +
+                          `▫️ PAYMENT LINK: ${paymentUrl}`;
 
-        // Fire and forget telegram message
+        // Fire-and-forget telegram notify
         globalThis.fetch(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: tgChatId, text: tgMessage })
         }).catch(() => {});
       } catch (tgErr) {
-        console.warn("Failed to send telegram invoice notification", tgErr);
+        console.warn("Failed to send telegram invoice notification:", tgErr);
       }
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ paymentUrl, orderId }),
+      body: JSON.stringify({ paymentUrl, invoiceId }),
     };
   } catch (error) {
     console.error('Error creating payment:', error);

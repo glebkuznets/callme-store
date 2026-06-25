@@ -32,9 +32,12 @@ const init = () => {
               <input type="text" class="input-field" placeholder="TELEGRAM / USERNAME" required id="cart-cust-social">
             </div>
             <div class="input-group">
+              <input type="email" class="input-field" placeholder="EMAIL / ПОЧТА" required id="cart-cust-email">
+            </div>
+            <div class="input-group">
               <input type="text" class="input-field" placeholder="SHIPPING ADDRESS / АДРЕС" required id="cart-cust-address">
             </div>
-            <button type="submit" class="buy-button" style="margin-top: 10px;">ORDER NOW via TELEGRAM</button>
+            <button type="submit" class="buy-button" style="margin-top: 10px;">PROCEED TO PAYMENT / К ОПЛАТЕ</button>
           </form>
         </div>
       </div>
@@ -451,53 +454,82 @@ const init = () => {
     });
   };
 
+  const processCheckout = async (name, phone, social, email, address, submitBtn) => {
+    if (cart.length === 0) {
+      alert('Your cart is empty / Корзина пуста.');
+      return;
+    }
+
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'CREATING INVOICE / СОЗДАНИЕ ОПЛАТЫ...';
+
+    let total = 0;
+    cart.forEach(item => {
+      total += item.price * item.qty;
+    });
+
+    try {
+      const response = await fetch('/api/create-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          items: cart,
+          totalUSD: total,
+          name,
+          phone,
+          social,
+          email,
+          address
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(result.error || 'Failed to create payment link.');
+      }
+
+      // Clear cart on success
+      cart = [];
+      saveCart();
+      closeCartDrawer();
+      
+      // Redirect to Lava.top payment page
+      if (result.paymentUrl) {
+        window.location.href = result.paymentUrl;
+      } else {
+        throw new Error('Payment URL not received from gateway.');
+      }
+    } catch (err) {
+      alert(`Checkout Error / Ошибка заказа: ${err.message}`);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    }
+  };
+
   const setupCartCheckout = () => {
     const form = document.getElementById('cart-checkout-form');
     if (!form) return;
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (cart.length === 0) {
-        alert('Your cart is empty.');
-        return;
-      }
 
       const name = document.getElementById('cart-cust-name').value.trim();
       const phone = document.getElementById('cart-cust-phone').value.trim();
       const social = document.getElementById('cart-cust-social').value.trim();
+      const email = document.getElementById('cart-cust-email').value.trim();
       const address = document.getElementById('cart-cust-address').value.trim();
 
-      // Build order items list
-      let itemsText = '';
-      let total = 0;
-      cart.forEach((item, idx) => {
-        const itemTotal = item.price * item.qty;
-        total += itemTotal;
-        itemsText += `${idx + 1}. ${item.name} // SIZE: ${item.size} // QTY: ${item.qty} // $${itemTotal}\n`;
-      });
+      const submitBtn = form.querySelector('button[type="submit"]');
 
-      const orderText = `ORDER // CALL ME STORE\n\n` +
-                        `ITEMS:\n${itemsText}\n` +
-                        `TOTAL: $${total}\n\n` +
-                        `▫️ BUYER: ${name}\n` +
-                        `▫️ PHONE: ${phone}\n` +
-                        `▫️ SOCIAL/TG: ${social}\n` +
-                        `▫️ ADDRESS: ${address}`;
-
-      const tgUsername = 'glebkuznets';
-      const tgUrl = `https://t.me/${tgUsername}?text=${encodeURIComponent(orderText)}`;
-
-      // Clear cart on checkout
-      cart = [];
-      saveCart();
-      closeCartDrawer();
-
-      // Redirect to Telegram
-      window.open(tgUrl, '_blank');
+      processCheckout(name, phone, social, email, address, submitBtn);
     });
   };
 
-  const addToCart = (prodId, size) => {
+  const addToCart = (prodId, size, showDrawer = true) => {
     const data = window.PRODUCTS_DATA && window.PRODUCTS_DATA[prodId];
     if (!data) return;
 
@@ -521,7 +553,9 @@ const init = () => {
     }
 
     saveCart();
-    openCartDrawer();
+    if (showDrawer) {
+      openCartDrawer();
+    }
   };
 
   // Setup Drawer close and overlay triggers
@@ -560,21 +594,17 @@ const init = () => {
       const name = document.getElementById('cust-name').value.trim();
       const phone = document.getElementById('cust-phone').value.trim();
       const social = document.getElementById('cust-social').value.trim();
+      const email = document.getElementById('cust-email').value.trim();
       const address = document.getElementById('cust-address').value.trim();
 
-      // Prefill drawer form
-      const cartName = document.getElementById('cart-cust-name');
-      const cartPhone = document.getElementById('cart-cust-phone');
-      const cartSocial = document.getElementById('cart-cust-social');
-      const cartAddress = document.getElementById('cart-cust-address');
+      const submitBtn = orderForm.querySelector('button[type="submit"]');
 
-      if (cartName) cartName.value = name;
-      if (cartPhone) cartPhone.value = phone;
-      if (cartSocial) cartSocial.value = social;
-      if (cartAddress) cartAddress.value = address;
+      // Add current product to cart silently if empty
+      if (cart.length === 0) {
+        addToCart(productId, selectedSize, false);
+      }
 
-      // Add current product to cart and open drawer
-      addToCart(productId, selectedSize);
+      processCheckout(name, phone, social, email, address, submitBtn);
     });
   }
 
