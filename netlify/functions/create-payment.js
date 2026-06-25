@@ -94,7 +94,7 @@ exports.handler = async (event, context) => {
 
     // Lava.top Configuration
     const lavaApiKey = process.env.LAVA_API_KEY || 'DhqQfPXePVnHyHl5WX3EPDbu1pYxuWKDLmIzDCtH5cMZ0crVUwwkaFJnvWQjksvW';
-    const offerId = process.env.LAVA_OFFER_ID || 'd9623c32-e760-45b0-ba30-a28a9baf97a9';
+    const offerId = process.env.LAVA_OFFER_ID || 'd9623c32-e760-45b0-ba30-e28a9bef97e9';
 
     // Prepare JSON payload for gate.lava.top api v3
     const requestPayload = {
