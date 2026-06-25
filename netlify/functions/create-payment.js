@@ -1,45 +1,82 @@
 const https = require('https');
 
 // Helper function for version-agnostic HTTPS requests in Node.js
-function httpsRequest(url, options, postData) {
+function httpsRequest(urlStr, options, postData) {
   return new Promise((resolve, reject) => {
-    const req = https.request(url, options, (res) => {
-      let body = '';
-      res.on('data', (chunk) => {
-        body += chunk;
-      });
-      res.on('end', () => {
-        resolve({
-          ok: res.statusCode >= 200 && res.statusCode < 300,
-          statusCode: res.statusCode,
-          json: () => {
-            try {
-              return JSON.parse(body);
-            } catch (e) {
-              return { error: 'Invalid JSON', body };
-            }
-          },
-          text: () => body
+    try {
+      const parsedUrl = new URL(urlStr);
+      
+      const reqOptions = {
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || 443,
+        path: parsedUrl.pathname + parsedUrl.search,
+        method: options.method || 'GET',
+        headers: { ...(options.headers || {}) }
+      };
+
+      let payload = null;
+      if (postData) {
+        payload = typeof postData === 'string' ? postData : JSON.stringify(postData);
+        reqOptions.headers['Content-Length'] = Buffer.byteLength(payload);
+      }
+
+      const req = https.request(reqOptions, (res) => {
+        let body = '';
+        res.on('data', (chunk) => {
+          body += chunk;
+        });
+        res.on('end', () => {
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            statusCode: res.statusCode,
+            json: () => {
+              try {
+                return JSON.parse(body);
+              } catch (e) {
+                return { error: 'Invalid JSON', body };
+              }
+            },
+            text: () => body
+          });
         });
       });
-    });
 
-    req.on('error', (err) => {
-      reject(err);
-    });
+      req.on('error', (err) => {
+        reject(err);
+      });
 
-    if (postData) {
-      req.write(typeof postData === 'string' ? postData : JSON.stringify(postData));
+      if (payload) {
+        req.write(payload);
+      }
+      req.end();
+    } catch (e) {
+      reject(e);
     }
-    req.end();
   });
 }
 
 exports.handler = async (event, context) => {
+  const jsonHeaders = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  };
+
+  // Handle preflight OPTIONS requests
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: jsonHeaders,
+      body: ''
+    };
+  }
+
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers: jsonHeaders,
       body: JSON.stringify({ error: 'Method Not Allowed' }),
     };
   }
@@ -50,6 +87,7 @@ exports.handler = async (event, context) => {
     if (!items || !totalUSD || !email) {
       return {
         statusCode: 400,
+        headers: jsonHeaders,
         body: JSON.stringify({ error: 'Missing required parameters (items, totalUSD, or email)' }),
       };
     }
@@ -85,6 +123,7 @@ exports.handler = async (event, context) => {
       console.error('Lava.top API error response:', lavaResult);
       return {
         statusCode: 400,
+        headers: jsonHeaders,
         body: JSON.stringify({ 
           error: 'Failed to create invoice with Lava.top.', 
           details: lavaResult.message || JSON.stringify(lavaResult) 
@@ -126,12 +165,14 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers: jsonHeaders,
       body: JSON.stringify({ paymentUrl, invoiceId }),
     };
   } catch (error) {
     console.error('Error creating payment:', error);
     return {
       statusCode: 500,
+      headers: jsonHeaders,
       body: JSON.stringify({ error: 'Internal Server Error', details: error.message }),
     };
   }
