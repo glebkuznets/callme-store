@@ -1147,10 +1147,20 @@ body.stealth-mode .center-logo-container {
   .media-column {
     padding: 0;
     height: auto;
+    display: block;
+  }
+
+  .gallery-wrapper {
+    flex-direction: column;
+    gap: 0;
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
 
   .product-slider {
-    height: 80vh;
+    height: 70vh;
+    width: 100%;
     border: none;
   }
   
