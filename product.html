@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CALL ME — CM-J01-HM</title>
   <meta name="description" content="CALL ME CM-J01-HM. Ultra-minimalist techwear storefront.">
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body class="stealth-mode">
 
@@ -34,7 +34,53 @@
   <!-- Main Store Split Grid -->
   <main class="main-content">
     
-    <!-- Left Column: Utilitarian Sticky Sidebar -->
+    <!-- Left Column: Product Photos Gallery (Thumbnails + Main Slide Viewer) -->
+    <section class="media-column" id="product-media-column">
+      <div class="gallery-wrapper">
+        <!-- Vertical Thumbnails Column -->
+        <div class="thumbnails-container" id="thumbnails-container">
+          <div class="thumb-item active" data-index="0">
+            <img src="assets/images/studio/studio_1.jpg" alt="Thumb 1">
+          </div>
+          <div class="thumb-item" data-index="1">
+            <img src="assets/images/studio/studio_2.jpg" alt="Thumb 2">
+          </div>
+          <div class="thumb-item" data-index="2">
+            <img src="assets/images/studio/studio_3.jpg" alt="Thumb 3">
+          </div>
+          <div class="thumb-item" data-index="3">
+            <img src="assets/images/studio/studio_4.jpg" alt="Thumb 4">
+          </div>
+          <div class="thumb-item" data-index="4">
+            <img src="assets/images/studio/studio_5.jpg" alt="Thumb 5">
+          </div>
+          <div class="thumb-item" data-index="5">
+            <img src="assets/images/studio/studio_6.jpg" alt="Thumb 6">
+          </div>
+        </div>
+        
+        <!-- Main Slider Viewer -->
+        <div class="product-slider" id="product-slider">
+          <button class="slider-arrow prev" id="slider-prev" aria-label="Previous Photo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <div class="slider-track" id="slider-track">
+            <div class="slide"><img src="assets/images/studio/studio_1.jpg" alt="HOODIE ON STEALTH FRONT VIEW" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_2.jpg" alt="HOODIE ON STEALTH FLATLAY POCKETS" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_3.jpg" alt="HOODIE ON STEALTH ZIPPER CLOSEUP" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_4.jpg" alt="HOODIE ON STEALTH HIDDEN STORAGE" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_5.jpg" alt="HOODIE ON STEALTH EMBROIDERY CLOSEUP" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_6.jpg" alt="HOODIE ON STEALTH BACKPRINT TEXTURE" class="primary-photo"></div>
+          </div>
+          <button class="slider-arrow next" id="slider-next" aria-label="Next Photo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7" /></svg>
+          </button>
+          <div class="slider-counter tech-font" id="slider-counter">[ 01 // 06 ]</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Utilitarian Sticky Sidebar -->
     <section class="product-sidebar">
       
       <div>
@@ -80,40 +126,63 @@
         </div>
       </div>
 
-      <!-- Technical Specifications -->
-      <div class="specs-block">
-        <div class="section-label">SPECIFICATIONS</div>
-        <ul id="product-specs-list">
-          <li><span>FABRIC:</span> 380G/M² HEAVYWEIGHT FRENCH TERRY COTTON</li>
-          <li><span>FIT:</span> UNISEX TECHNICAL OVERSIZED SILHOUETTE</li>
-          <li><span>UTILITY:</span> DUAL HIDDEN ZIP-POCKETS IN KANGAROO POUCH</li>
-          <li><span>GRAPHIC:</span> SILKSCREEN PHONE BACK PRINT</li>
-          <li><span>DETAILS:</span> WHITE EMBROIDERY ON CHEST & HOOD</li>
-          <li><span>ORIGIN:</span> BALI Drop // LIMITED RUN</li>
-        </ul>
-      </div>
-
-    </section>
-
-    <!-- Right Column: Horizontal Studio/Product Photos Slider -->
-    <section class="media-column" id="product-media-column">
-      <div class="product-slider" id="product-slider">
-        <button class="slider-arrow prev" id="slider-prev" aria-label="Previous Photo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7" /></svg>
-        </button>
-        <div class="slider-track" id="slider-track">
-          <div class="slide"><img src="assets/images/studio/studio_1.jpg" alt="CM-J01-HM FRONT VIEW" class="primary-photo"></div>
-          <div class="slide"><img src="assets/images/studio/studio_2.jpg" alt="CM-J01-HM FLATLAY POCKETS" class="primary-photo"></div>
-          <div class="slide"><img src="assets/images/studio/studio_3.jpg" alt="CM-J01-HM ZIPPER CLOSEUP" class="primary-photo"></div>
-          <div class="slide"><img src="assets/images/studio/studio_4.jpg" alt="CM-J01-HM HIDDEN STORAGE" class="primary-photo"></div>
-          <div class="slide"><img src="assets/images/studio/studio_5.jpg" alt="CM-J01-HM EMBROIDERY CLOSEUP" class="primary-photo"></div>
-          <div class="slide"><img src="assets/images/studio/studio_6.jpg" alt="CM-J01-HM BACKPRINT TEXTURE" class="primary-photo"></div>
+      <!-- Accordion Details Section -->
+      <div class="accordion-section">
+        
+        <!-- Accordion Item: DETAILS -->
+        <div class="accordion-item active">
+          <button class="accordion-trigger tech-font">
+            DETAILS
+            <span class="accordion-icon">—</span>
+          </button>
+          <div class="accordion-content">
+            <ul class="accordion-specs">
+              <li><span>COLOR:</span> BLACK</li>
+              <li><span>FABRIC:</span> 100% PREMIUM COTTON</li>
+              <li><span>FIT:</span> LOOSE FIT</li>
+              <li><span>UTILITY:</span> MAIN FRONT POCKET WITH TWO INTERNAL ZIP COMPARTMENTS</li>
+              <li><span>STEALTH:</span> CONCEALED SECURITY POCKET IN HOOD</li>
+              <li><span>GRAPHIC:</span> LARGE SILKSCREEN BRAND LOGO ON BACK</li>
+              <li><span>ORIGIN:</span> BALI DROP // LIMITED RUN</li>
+            </ul>
+          </div>
         </div>
-        <button class="slider-arrow next" id="slider-next" aria-label="Next Photo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7" /></svg>
-        </button>
-        <div class="slider-counter tech-font" id="slider-counter">[ 01 // 06 ]</div>
+
+        <!-- Accordion Item: SHIPPING -->
+        <div class="accordion-item">
+          <button class="accordion-trigger tech-font">
+            SHIPPING
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-content">
+            <p>Orders are shipped worldwide from Moscow, Bangkok, and Indonesia. Shipping is calculated at checkout and takes 7–14 business days.</p>
+          </div>
+        </div>
+
+        <!-- Accordion Item: TERMS -->
+        <div class="accordion-item">
+          <button class="accordion-trigger tech-font">
+            TERMS
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-content">
+            <p>All sales are final. Since our drops are highly limited runs, we do not accept returns or size exchanges once an order is shipped. Please consult the sizing specs carefully before purchasing.</p>
+          </div>
+        </div>
+
+        <!-- Accordion Item: INTERNATIONAL ORDERS -->
+        <div class="accordion-item">
+          <button class="accordion-trigger tech-font">
+            INTERNATIONAL ORDERS
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-content">
+            <p>For international shipments, customs duty fees or local import taxes may apply depending on your country. These charges are the sole responsibility of the buyer.</p>
+          </div>
+        </div>
+
       </div>
+
     </section>
 
   </main>
@@ -189,7 +258,7 @@
   <!-- Canvas for Iridescent Glitch Cursor Trail -->
   <canvas id="cursor-trail" class="cursor-trail"></canvas>
 
-  <script src="products_data.js?v=8"></script>
-  <script src="app.js?v=8"></script>
+  <script src="products_data.js?v=9"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>

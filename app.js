@@ -353,6 +353,8 @@ const init = () => {
     const prevBtn = document.getElementById('slider-prev');
     const nextBtn = document.getElementById('slider-next');
     const counter = document.getElementById('slider-counter');
+    const thumbContainer = document.getElementById('thumbnails-container');
+    const thumbs = thumbContainer ? thumbContainer.querySelectorAll('.thumb-item') : [];
     
     if (!slider || !track) return;
     
@@ -367,6 +369,15 @@ const init = () => {
         const formattedTotal = String(totalSlides).padStart(2, '0');
         counter.textContent = `[ ${formattedIndex} // ${formattedTotal} ]`;
       }
+      
+      // Update active thumbnail class
+      thumbs.forEach((t, idx) => {
+        if (idx === currentIndex) {
+          t.classList.add('active');
+        } else {
+          t.classList.remove('active');
+        }
+      });
     };
     
     const nextSlide = () => {
@@ -381,6 +392,14 @@ const init = () => {
     
     if (nextBtn) nextBtn.addEventListener('click', nextSlide);
     if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    
+    // Thumbnail click listeners
+    thumbs.forEach((thumb, idx) => {
+      thumb.addEventListener('click', (e) => {
+        currentIndex = idx;
+        updateSlider();
+      });
+    });
     
     // Touch Swipe support
     let startX = 0;
@@ -403,6 +422,33 @@ const init = () => {
       }
       isSwiping = false;
     }, { passive: true });
+  };
+
+  const setupAccordions = () => {
+    const items = document.querySelectorAll('.accordion-item');
+    items.forEach(item => {
+      const trigger = item.querySelector('.accordion-trigger');
+      const icon = item.querySelector('.accordion-icon');
+      if (!trigger || !icon) return;
+      
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isActive = item.classList.contains('active');
+        
+        // Close all items
+        items.forEach(i => {
+          i.classList.remove('active');
+          const otherIcon = i.querySelector('.accordion-icon');
+          if (otherIcon) otherIcon.textContent = '+';
+        });
+        
+        // Open clicked item if it was closed
+        if (!isActive) {
+          item.classList.add('active');
+          icon.textContent = '—';
+        }
+      });
+    });
   };
 
   const setupCartCheckout = () => {
@@ -537,6 +583,7 @@ const init = () => {
   renderCartItems();
   setupCartCheckout();
   setupProductSlider();
+  setupAccordions();
 
   // ==========================================================================
   // Subtle Glitch Pixel Cursor Trail System
