@@ -94,7 +94,12 @@ exports.handler = async (event, context) => {
 
     // Lava.top Configuration
     const lavaApiKey = process.env.LAVA_API_KEY || 'DhqQfPXePVnHyHl5WX3EPDbu1pYxuWKDLmIzDCtH5cMZ0crVUwwkaFJnvWQjksvW';
-    const offerId = process.env.LAVA_OFFER_ID || '1a07eb81-3aea-4f77-9498-2d56e8e3be2d';
+    let offerId = process.env.LAVA_OFFER_ID || '1a07eb81-3aea-4f77-9498-2d56e8e3be2d';
+    
+    // Override if Netlify env variable was set to the incorrect product ID
+    if (offerId === 'd9623c32-e760-45b0-ba30-e28a9bef97e9') {
+      offerId = '1a07eb81-3aea-4f77-9498-2d56e8e3be2d';
+    }
 
     // Prepare JSON payload for gate.lava.top api v3
     const requestPayload = {
