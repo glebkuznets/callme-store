@@ -158,11 +158,11 @@ exports.handler = async (event, context) => {
                           `▫️ PROMO CODE: ${promoCode || 'NONE'}\n\n` +
                           `▫️ PAYMENT LINK: ${paymentUrl}`;
 
-        // Fire-and-forget telegram notify using our HTTPS helper
-        httpsRequest(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
+        // Await telegram notify to prevent serverless function termination before request completes
+        await httpsRequest(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }
-        }, { chat_id: tgChatId, text: tgMessage }).catch(() => {});
+        }, { chat_id: tgChatId, text: tgMessage });
       } catch (tgErr) {
         console.warn("Failed to send telegram invoice notification:", tgErr);
       }
