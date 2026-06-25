@@ -1358,6 +1358,96 @@ const init = () => {
     // Kick off the scheduling loop
     scheduleNextSwitch();
   }
+
+  // --- AUTOMATED SCREENSHOT / TESTING AUTOFILLS ---
+  const testParams = new URLSearchParams(window.location.search);
+  if (testParams.get('test_add') === '1') {
+    cart = [];
+    localStorage.removeItem('applied_promo_code');
+    localStorage.removeItem('promo_discount_rate');
+    saveCart();
+    addToCart(productId, selectedSize, false);
+    updateStepperButton();
+  } else if (testParams.get('test_cart') === '1') {
+    cart = [{ id: 'hoodie', name: 'CM-J01-HM HOODIE', price: 240, size: 'M', qty: 1, image: 'assets/images/studio/studio_1.jpg' }];
+    localStorage.setItem('applied_promo_code', 'STEALTH10');
+    localStorage.setItem('promo_discount_rate', '0.1');
+    saveCart();
+    if (typeof renderCartPage === 'function') {
+      renderCartPage();
+    }
+  } else if (testParams.get('test_checkout') === '1') {
+    cart = [{ id: 'hoodie', name: 'CM-J01-HM HOODIE', price: 240, size: 'M', qty: 1, image: 'assets/images/studio/studio_1.jpg' }];
+    localStorage.setItem('applied_promo_code', 'STEALTH10');
+    localStorage.setItem('promo_discount_rate', '0.1');
+    saveCart();
+    
+    // Autofill checkout page inputs
+    setTimeout(() => {
+      const nameField = document.getElementById('check-name');
+      const phoneField = document.getElementById('check-phone');
+      const emailField = document.getElementById('check-email');
+      const addressField = document.getElementById('check-address');
+      const cityField = document.getElementById('check-city');
+      
+      if (nameField) nameField.value = "Gleb Kuznets";
+      if (phoneField) phoneField.value = "+7 (999) 123-45-67";
+      if (emailField) emailField.value = "glebkuznets@gmail.com";
+      if (addressField) addressField.value = "Baker Street 221B, apt. 4";
+      
+      if (cityField) {
+        cityField.value = "Москва, Россия";
+        const optionsWrapper = document.getElementById('shipping-options-wrapper');
+        const detailedAddressGroup = document.getElementById('detailed-address-group');
+        const methodsList = document.getElementById('shipping-methods-list');
+        
+        if (optionsWrapper && detailedAddressGroup && methodsList) {
+          optionsWrapper.style.display = 'block';
+          detailedAddressGroup.style.display = 'block';
+          
+          // Render RU shipping methods
+          methodsList.innerHTML = '';
+          const ruMethods = [
+            { id: 'sdek_pickup', name: 'SDEK_PICKUP', title: 'SDEK PICKUP / СДЭК ДО ПУНКТА ВЫДАЧИ', desc: 'Delivery to SDEK locker or pickup point near you // Доставка до ПВЗ СДЭК.', price: 5 },
+            { id: 'sdek_courier', name: 'SDEK_COURIER', title: 'SDEK COURIER / СДЭК КУРЬЕР', desc: 'Hand-to-hand delivery to your doorstep // Доставка курьером до двери.', price: 8 }
+          ];
+          
+          ruMethods.forEach((opt, idx) => {
+            const item = document.createElement('div');
+            const isFirst = idx === 0;
+            item.className = `shipping-method-item${isFirst ? ' active' : ''}`;
+            item.dataset.id = opt.id;
+            item.dataset.price = opt.price;
+            item.dataset.name = opt.name;
+            
+            item.innerHTML = `
+              <div class="custom-radio"></div>
+              <div class="shipping-info-wrapper">
+                <div class="shipping-text-block">
+                  <span class="shipping-title">${opt.title}</span>
+                  <span class="shipping-desc">${opt.desc}</span>
+                </div>
+                <span class="shipping-price">$${opt.price}</span>
+              </div>
+            `;
+            
+            methodsList.appendChild(item);
+          });
+          
+          // Trigger click event on SDEK courier option to load checkout summary total
+          setTimeout(() => {
+            const secondItem = methodsList.querySelectorAll('.shipping-method-item')[1]; // SDEK Courier
+            if (secondItem) {
+              secondItem.click();
+            } else {
+              const firstItem = methodsList.querySelector('.shipping-method-item');
+              if (firstItem) firstItem.click();
+            }
+          }, 100);
+        }
+      }
+    }, 150);
+  }
 };
 
 // Start initialization based on readyState

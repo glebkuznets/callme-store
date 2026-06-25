@@ -31,44 +31,94 @@
     </div>
   </nav>
 
-  <!-- Centered Cart Content -->
-  <main class="cart-page-container">
-    <div class="cart-page-content">
-      <div class="cart-page-header">
-        <a href="product.html" class="back-link tech-font">&lt; BACK / НАЗАД</a>
-        <div class="cart-page-title tech-font">CART / КОРЗИНА</div>
-        <a href="checkout.html" class="checkout-link tech-font" id="cart-header-checkout-btn">CHECKOUT / ОФОРМЛЕНИЕ &gt;</a>
-      </div>
-
-      <!-- Cart Items Container -->
-      <div class="cart-page-items" id="cart-page-items-list">
-        <!-- Rendered dynamically via JS -->
-        <div class="cart-empty-msg tech-font">CART IS EMPTY // КОРЗИНА ПУСТА</div>
-      </div>
-
-      <!-- Cart Page Footer / Actions -->
-      <div class="cart-page-footer" id="cart-page-footer-section" style="display: none;">
-        <!-- Promo Code Section -->
-        <div class="promo-section">
-          <div class="promo-input-wrapper">
-            <input type="text" class="input-field promo-input" id="promo-code-input" placeholder="PROMOCODE / ПРОМОКОД">
-            <button class="promo-btn tech-font" id="apply-promo-btn">ACTIVATE / АКТИВИРОВАТЬ</button>
+  <!-- Main Store Split Grid -->
+  <main class="main-content">
+    
+    <!-- Left Column: Product Photos Gallery (Thumbnails + Main Slide Viewer) -->
+    <section class="media-column" id="product-media-column">
+      <div class="gallery-wrapper">
+        <!-- Vertical Thumbnails Column -->
+        <div class="thumbnails-container" id="thumbnails-container">
+          <div class="thumb-item active" data-index="0">
+            <img src="assets/images/studio/studio_1.jpg" alt="Thumb 1">
           </div>
-          <div class="promo-status tech-font" id="promo-status-message"></div>
+          <div class="thumb-item" data-index="1">
+            <img src="assets/images/studio/studio_2.jpg" alt="Thumb 2">
+          </div>
+          <div class="thumb-item" data-index="2">
+            <img src="assets/images/studio/studio_3.jpg" alt="Thumb 3">
+          </div>
+          <div class="thumb-item" data-index="3">
+            <img src="assets/images/studio/studio_4.jpg" alt="Thumb 4">
+          </div>
+          <div class="thumb-item" data-index="4">
+            <img src="assets/images/studio/studio_5.jpg" alt="Thumb 5">
+          </div>
+          <div class="thumb-item" data-index="5">
+            <img src="assets/images/studio/studio_6.jpg" alt="Thumb 6">
+          </div>
         </div>
-
-        <!-- Total Price -->
-        <div class="cart-page-total-row tech-font">
-          <span>TOTAL // ИТОГО:</span>
-          <span class="total-amount-val" id="cart-page-grand-total">$0</span>
+        
+        <!-- Main Slider Viewer -->
+        <div class="product-slider" id="product-slider">
+          <button class="slider-arrow prev" id="slider-prev" aria-label="Previous Photo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <div class="slider-track" id="slider-track">
+            <div class="slide"><img src="assets/images/studio/studio_1.jpg" alt="HOODIE ON STEALTH FRONT VIEW" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_2.jpg" alt="HOODIE ON STEALTH FLATLAY POCKETS" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_3.jpg" alt="HOODIE ON STEALTH ZIPPER CLOSEUP" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_4.jpg" alt="HOODIE ON STEALTH HIDDEN STORAGE" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_5.jpg" alt="HOODIE ON STEALTH EMBROIDERY CLOSEUP" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_6.jpg" alt="HOODIE ON STEALTH BACKPRINT TEXTURE" class="primary-photo"></div>
+          </div>
+          <button class="slider-arrow next" id="slider-next" aria-label="Next Photo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7" /></svg>
+          </button>
+          <div class="slider-counter tech-font" id="slider-counter">[ 01 // 06 ]</div>
         </div>
-
-        <!-- Checkout Button -->
-        <button class="buy-button checkout-big-btn tech-font" id="cart-page-checkout-btn">
-          CHECKOUT / ОФОРМИТЬ ЗАКАЗ
-        </button>
       </div>
-    </div>
+    </section>
+
+    <!-- Right Column: Cart Sidebar -->
+    <section class="product-sidebar">
+      <div class="cart-page-content" style="background: transparent; border: none; padding: 0; backdrop-filter: none; max-width: 100%;">
+        <div class="cart-page-header" style="margin-bottom: 20px;">
+          <a href="product.html" class="back-link tech-font">&lt; BACK / НАЗАД</a>
+          <div class="cart-page-title tech-font">CART / КОРЗИНА</div>
+        </div>
+
+        <!-- Cart Items Container -->
+        <div class="cart-page-items" id="cart-page-items-list" style="margin-top: 20px;">
+          <!-- Rendered dynamically via JS -->
+          <div class="cart-empty-msg tech-font">CART IS EMPTY // КОРЗИНА ПУСТА</div>
+        </div>
+
+        <!-- Cart Page Footer / Actions -->
+        <div class="cart-page-footer" id="cart-page-footer-section" style="display: none; border-top: 1px solid var(--border-dark); padding-top: 20px;">
+          <!-- Promo Code Section -->
+          <div class="promo-section">
+            <div class="promo-input-wrapper">
+              <input type="text" class="input-field promo-input" id="promo-code-input" placeholder="PROMOCODE / ПРОМОКОД">
+              <button class="promo-btn tech-font" id="apply-promo-btn">ACTIVATE / АКТИВИРОВАТЬ</button>
+            </div>
+            <div class="promo-status tech-font" id="promo-status-message"></div>
+          </div>
+
+          <!-- Total Price -->
+          <div class="cart-page-total-row tech-font">
+            <span>TOTAL // ИТОГО:</span>
+            <span class="total-amount-val" id="cart-page-grand-total">$0</span>
+          </div>
+
+          <!-- Checkout Button -->
+          <button class="buy-button checkout-big-btn tech-font" id="cart-page-checkout-btn">
+            CHECKOUT / ОФОРМИТЬ ЗАКАЗ
+          </button>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Canvas for Iridescent Glitch Cursor Trail -->
