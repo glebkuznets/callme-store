@@ -4,10 +4,10 @@
 
 window.PRODUCTS_DATA = {
   "hoodie": {
-    "name": "CM-J01-HM HOODIE",
+    "name": "HOODIE \"ON STEALTH\"",
     "code": "CM-J01-HM // GEN-1",
     "collection": "STEALS",
-    "price": "$200",
+    "price": "$240",
     "sizes": ["S", "M", "L", "XL"],
     "specs": [
       "FABRIC: 380G/M² HEAVYWEIGHT FRENCH TERRY COTTON",

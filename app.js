@@ -457,7 +457,7 @@ const init = () => {
 
     // Use the first image in the product images stack
     const imageSrc = data.images && data.images[0] ? data.images[0] : '';
-    const priceVal = 200; // fixed $200 price
+    const priceVal = 240; // fixed $240 price
 
     // Check if item is already in cart
     const existing = cart.find(item => item.id === prodId && item.size === size);
