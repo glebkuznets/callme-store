@@ -10,7 +10,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { items, totalUSD, name, email, phone, social, address } = JSON.parse(event.body);
+    const { items, totalUSD, name, email, phone, social, address, promoCode } = JSON.parse(event.body);
 
     if (!items || !totalUSD || !email) {
       return {
@@ -21,8 +21,19 @@ exports.handler = async (event, context) => {
 
     // Lava.top Configuration
     const lavaApiKey = process.env.LAVA_API_KEY || 'DhqQfPXePVnHyHl5WX3EPDbu1pYxuWKDLmIzDCtH5cMZ0crVUwwkaFJnvWQjksvW';
-    // Offer ID created on Lava.top dashboard for the $240 hoodie
     const offerId = process.env.LAVA_OFFER_ID || 'd9623c32-e760-45b0-ba30-a28a9baf97a9';
+
+    // Prepare JSON payload for gate.lava.top api v3
+    const requestPayload = {
+      email: email,
+      offerId: offerId,
+      currency: 'USD',
+      amount: parseFloat(totalUSD)
+    };
+
+    if (promoCode) {
+      requestPayload.promoCode = promoCode;
+    }
 
     // Call Lava.top Public API (v3/invoice) to generate invoice contract
     const lavaResponse = await globalThis.fetch('https://gate.lava.top/api/v3/invoice', {
@@ -31,11 +42,7 @@ exports.handler = async (event, context) => {
         'Content-Type': 'application/json',
         'X-Api-Key': lavaApiKey
       },
-      body: JSON.stringify({
-        email: email,
-        offerId: offerId,
-        currency: 'USD'
-      })
+      body: JSON.stringify(requestPayload)
     });
 
     const lavaResult = await lavaResponse.json();
@@ -69,7 +76,8 @@ exports.handler = async (event, context) => {
                           `▫️ EMAIL: ${email}\n` +
                           `▫️ PHONE: ${phone}\n` +
                           `▫️ SOCIAL/TG: ${social}\n` +
-                          `▫️ ADDRESS: ${address}\n\n` +
+                          `▫️ ADDRESS: ${address}\n` +
+                          `▫️ PROMO CODE: ${promoCode || 'NONE'}\n\n` +
                           `▫️ PAYMENT LINK: ${paymentUrl}`;
 
         // Fire-and-forget telegram notify

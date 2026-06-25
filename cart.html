@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CALL ME — CART / КОРЗИНА</title>
+  <meta name="description" content="CALL ME — Shopping Cart">
+  <link rel="stylesheet" href="styles.css?v=10">
+</head>
+<body class="stealth-mode">
+
+  <!-- Video Background Substrate (ACRONYM style) -->
+  <div class="video-bg-container">
+    <video src="assets/videos/video_1.mp4" autoplay loop muted playsinline class="video-bg active" id="bg-video-1"></video>
+    <video src="assets/videos/video_2.mp4" loop muted playsinline class="video-bg" id="bg-video-2"></video>
+    <video src="assets/videos/video_3.mp4" loop muted playsinline class="video-bg" id="bg-video-3"></video>
+    <video src="assets/videos/video_4.mp4" loop muted playsinline class="video-bg" id="bg-video-4"></video>
+    <canvas id="tv-glitch-canvas" class="tv-glitch-canvas"></canvas>
+    <div class="video-bg-overlay"></div>
+  </div>
+
+  <!-- Navigation Header -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="index.html" class="logo-link" id="logo-trigger">
+        <img src="assets/images/logo.png" alt="CALL ME Logo" class="logo-img">
+      </a>
+      <div class="cart-indicator" id="cart-btn" style="cursor: pointer;">
+        CART [ <span id="nav-cart-count">0</span> ]
+      </div>
+    </div>
+  </nav>
+
+  <!-- Centered Cart Content -->
+  <main class="cart-page-container">
+    <div class="cart-page-content">
+      <div class="cart-page-header">
+        <a href="product.html" class="back-link tech-font">&lt; BACK / НАЗАД</a>
+        <div class="cart-page-title tech-font">CART / КОРЗИНА</div>
+        <a href="checkout.html" class="checkout-link tech-font" id="cart-header-checkout-btn">CHECKOUT / ОФОРМЛЕНИЕ &gt;</a>
+      </div>
+
+      <!-- Cart Items Container -->
+      <div class="cart-page-items" id="cart-page-items-list">
+        <!-- Rendered dynamically via JS -->
+        <div class="cart-empty-msg tech-font">CART IS EMPTY // КОРЗИНА ПУСТА</div>
+      </div>
+
+      <!-- Cart Page Footer / Actions -->
+      <div class="cart-page-footer" id="cart-page-footer-section" style="display: none;">
+        <!-- Promo Code Section -->
+        <div class="promo-section">
+          <div class="promo-input-wrapper">
+            <input type="text" class="input-field promo-input" id="promo-code-input" placeholder="PROMOCODE / ПРОМОКОД">
+            <button class="promo-btn tech-font" id="apply-promo-btn">ACTIVATE / АКТИВИРОВАТЬ</button>
+          </div>
+          <div class="promo-status tech-font" id="promo-status-message"></div>
+        </div>
+
+        <!-- Total Price -->
+        <div class="cart-page-total-row tech-font">
+          <span>TOTAL // ИТОГО:</span>
+          <span class="total-amount-val" id="cart-page-grand-total">$0</span>
+        </div>
+
+        <!-- Checkout Button -->
+        <button class="buy-button checkout-big-btn tech-font" id="cart-page-checkout-btn">
+          CHECKOUT / ОФОРМИТЬ ЗАКАЗ
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Canvas for Iridescent Glitch Cursor Trail -->
+  <canvas id="cursor-trail" class="cursor-trail"></canvas>
+
+  <script src="products_data.js?v=10"></script>
+  <script src="app.js?v=10"></script>
+</body>
+</html>

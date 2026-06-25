@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CALL ME — CHECKOUT / ОФОРМЛЕНИЕ</title>
+  <meta name="description" content="CALL ME — Checkout Page">
+  <link rel="stylesheet" href="styles.css?v=10">
+</head>
+<body class="stealth-mode">
+
+  <!-- Video Background Substrate (ACRONYM style) -->
+  <div class="video-bg-container">
+    <video src="assets/videos/video_1.mp4" autoplay loop muted playsinline class="video-bg active" id="bg-video-1"></video>
+    <video src="assets/videos/video_2.mp4" loop muted playsinline class="video-bg" id="bg-video-2"></video>
+    <video src="assets/videos/video_3.mp4" loop muted playsinline class="video-bg" id="bg-video-3"></video>
+    <video src="assets/videos/video_4.mp4" loop muted playsinline class="video-bg" id="bg-video-4"></video>
+    <canvas id="tv-glitch-canvas" class="tv-glitch-canvas"></canvas>
+    <div class="video-bg-overlay"></div>
+  </div>
+
+  <!-- Navigation Header -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="index.html" class="logo-link" id="logo-trigger">
+        <img src="assets/images/logo.png" alt="CALL ME Logo" class="logo-img">
+      </a>
+      <div class="cart-indicator" id="cart-btn" style="cursor: pointer;">
+        CART [ <span id="nav-cart-count">0</span> ]
+      </div>
+    </div>
+  </nav>
+
+  <!-- Two-Column Checkout Grid -->
+  <main class="checkout-grid-container">
+    <div class="checkout-main-content">
+      
+      <!-- Left Column: Checkout Fields Form -->
+      <section class="checkout-form-column">
+        <div class="checkout-page-header">
+          <a href="cart.html" class="back-link tech-font">&lt; BACK TO CART / В КОРЗИНУ</a>
+        </div>
+
+        <!-- Authorization Block (decorative / matching Solution style) -->
+        <div class="checkout-auth-banner tech-font">
+          AUTHORIZATION // АВТОРИЗАЦИЯ
+          <button type="button" class="auth-btn">LOGIN OR REGISTER / ВОЙТИ ИЛИ ЗАРЕГИСТРИРОВАТЬСЯ</button>
+        </div>
+
+        <form id="checkout-main-form" class="checkout-main-form">
+          <!-- Section: Contact Details -->
+          <div class="checkout-form-section">
+            <h3 class="section-title tech-font">CONTACT DETAILS / КОНТАКТНЫЕ ДАННЫЕ</h3>
+            
+            <div class="input-group">
+              <label class="field-label tech-font" for="check-name">FULL NAME / ВАШЕ ФИО *</label>
+              <input type="text" class="input-field" id="check-name" placeholder="John Doe / Иванов Иван" required>
+            </div>
+            
+            <div class="input-group">
+              <label class="field-label tech-font" for="check-phone">PHONE / КОНТАКТНЫЙ ТЕЛЕФОН *</label>
+              <input type="tel" class="input-field" id="check-phone" placeholder="+7 (999) 123-45-67" required>
+            </div>
+            
+            <div class="input-group">
+              <label class="field-label tech-font" for="check-email">EMAIL / ПОЧТА *</label>
+              <input type="email" class="input-field" id="check-email" placeholder="client@example.com" required>
+            </div>
+          </div>
+
+          <!-- Section: Delivery -->
+          <div class="checkout-form-section">
+            <h3 class="section-title tech-font">DELIVERY / ДОСТАВКА</h3>
+            
+            <!-- City / Location Autocomplete Search -->
+            <div class="input-group" style="position: relative;">
+              <label class="field-label tech-font" for="check-city">CITY / НАСЕЛЕННЫЙ ПУНКТ *</label>
+              <input type="text" class="input-field autocomplete-input" id="check-city" placeholder="Type city, e.g. Москва, Bali, Bangkok..." autocomplete="off" required>
+              <!-- Suggestions Dropdown -->
+              <div class="autocomplete-suggestions" id="city-suggestions"></div>
+            </div>
+
+            <!-- Shipping Options (Loaded dynamically based on city) -->
+            <div class="shipping-options-container" id="shipping-options-wrapper" style="display: none;">
+              <div class="field-label tech-font">SHIPPING METHOD / СПОСОБ ДОСТАВКИ *</div>
+              
+              <div class="shipping-methods-list" id="shipping-methods-list">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Detailed Address Input -->
+            <div class="input-group" id="detailed-address-group" style="margin-top: 16px; display: none;">
+              <label class="field-label tech-font" for="check-address">STREET, BUILDING, APARTMENT / АДРЕС ДОСТАВКИ *</label>
+              <input type="text" class="input-field" id="check-address" placeholder="St. Baker 221B, apt. 4" required>
+            </div>
+          </div>
+
+          <!-- Section: Payment Method -->
+          <div class="checkout-form-section">
+            <h3 class="section-title tech-font">PAYMENT METHOD / СПОСОБ ОПЛАТЫ</h3>
+            
+            <div class="payment-method-selector">
+              <label class="radio-label active">
+                <input type="radio" name="payment-method" value="lava" checked>
+                <span class="custom-radio"></span>
+                <span class="radio-text tech-font">LAVA.TOP (CARDS, SBP, PAYPAL)</span>
+              </label>
+            </div>
+
+            <div class="agreement-checkbox">
+              <label class="checkbox-label">
+                <input type="checkbox" id="check-agreement" required checked>
+                <span class="custom-checkbox"></span>
+                <span class="checkbox-text tech-font">I agree to the processing of personal data / Согласие на обработку персональных данных *</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Checkout Big Button (Mobile only / hidden on desktop) -->
+          <button type="submit" class="buy-button mobile-checkout-btn tech-font" id="mobile-submit-btn">
+            CONFIRM ORDER / ПОДТВЕРДИТЬ ЗАКАЗ
+          </button>
+        </form>
+      </section>
+
+      <!-- Right Column: Sticky Summary Sidebar -->
+      <section class="checkout-summary-column">
+        <div class="summary-card-sticky">
+          <h3 class="summary-title tech-font">ORDER SUMMARY / ВАШ ЗАКАЗ</h3>
+
+          <!-- Items list -->
+          <div class="summary-items-list" id="summary-items-list">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Pricing Breakdowns -->
+          <div class="summary-pricing-rows tech-font">
+            <div class="price-row">
+              <span>SUBTOTAL / ТОВАРЫ:</span>
+              <span id="summary-subtotal">$0</span>
+            </div>
+            <div class="price-row" id="summary-promo-row" style="display: none; color: #ff007f;">
+              <span>PROMO DISCOUNT:</span>
+              <span id="summary-promo-discount">-$0</span>
+            </div>
+            <div class="price-row">
+              <span>SHIPPING / ДОСТАВКА:</span>
+              <span id="summary-shipping">$0</span>
+            </div>
+            <div class="price-row total-row">
+              <span>TOTAL / ИТОГО:</span>
+              <span id="summary-total">$0</span>
+            </div>
+          </div>
+
+          <!-- Checkout Button (Desktop) -->
+          <button type="button" class="buy-button desktop-checkout-btn tech-font" id="desktop-submit-btn">
+            CONFIRM ORDER / ПОДТВЕРДИТЬ ЗАКАЗ
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Canvas for Iridescent Glitch Cursor Trail -->
+  <canvas id="cursor-trail" class="cursor-trail"></canvas>
+
+  <script src="products_data.js?v=10"></script>
+  <script src="app.js?v=10"></script>
+</body>
+</html>

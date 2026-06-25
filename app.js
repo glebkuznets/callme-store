@@ -110,6 +110,7 @@ const init = () => {
           document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           selectedSize = sz;
+          updateStepperButton();
         });
 
         sizesGrid.appendChild(btn);
@@ -552,11 +553,507 @@ const init = () => {
       });
     }
 
-    saveCart();
-    if (showDrawer) {
-      openCartDrawer();
-    }
   };
+
+  function updateStepperButton() {
+    const container = document.getElementById('product-action-container');
+    if (!container) return;
+
+    const existing = cart.find(item => item.id === productId && item.size === selectedSize);
+
+    if (existing) {
+      container.innerHTML = `
+        <div class="split-buy-btn">
+          <button class="split-btn-minus" id="split-minus-btn" aria-label="Decrease Quantity">—</button>
+          <button class="split-btn-center" id="split-center-btn">
+            <span class="qty-text">${existing.qty} ITEM${existing.qty > 1 ? 'S' : ''} // ${existing.qty} ШТ</span>
+            <span class="go-cart-text">GO TO CART / В КОРЗИНУ</span>
+          </button>
+          <button class="split-btn-plus" id="split-plus-btn" aria-label="Increase Quantity">+</button>
+        </div>
+      `;
+
+      // Add listeners
+      document.getElementById('split-minus-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (existing.qty > 1) {
+          existing.qty--;
+        } else {
+          // Remove from cart
+          cart = cart.filter(item => !(item.id === productId && item.size === selectedSize));
+        }
+        saveCart();
+        updateCartBadge();
+        updateStepperButton();
+      });
+
+      document.getElementById('split-plus-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        existing.qty++;
+        saveCart();
+        updateCartBadge();
+        updateStepperButton();
+      });
+
+      document.getElementById('split-center-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'cart.html';
+      });
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'buy-button';
+      btn.id = 'add-to-cart-btn';
+      btn.textContent = 'ADD TO CART / В КОРЗИНУ';
+      
+      container.innerHTML = '';
+      container.appendChild(btn);
+      
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        addToCart(productId, selectedSize, false); // Add silently
+        updateStepperButton();
+        updateCartBadge();
+      });
+    }
+  }
+
+  function setupCartPage() {
+    const cartItemsList = document.getElementById('cart-page-items-list');
+    if (!cartItemsList) return;
+
+    const renderCartPage = () => {
+      const footerSection = document.getElementById('cart-page-footer-section');
+      
+      if (cart.length === 0) {
+        cartItemsList.innerHTML = `<div class="cart-empty-msg tech-font" style="text-align: center; padding: 40px 0;">CART IS EMPTY // КОРЗИНА ПУСТА</div>`;
+        if (footerSection) footerSection.style.display = 'none';
+        return;
+      }
+
+      if (footerSection) footerSection.style.display = 'block';
+      cartItemsList.innerHTML = '';
+
+      cart.forEach((item, idx) => {
+        const itemRow = document.createElement('div');
+        itemRow.className = 'cart-item-row';
+        itemRow.style.display = 'flex';
+        itemRow.style.justifyContent = 'space-between';
+        itemRow.style.alignItems = 'center';
+        itemRow.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+        itemRow.style.padding = '20px 0';
+        itemRow.style.gap = '20px';
+
+        itemRow.innerHTML = `
+          <div class="cart-item-left" style="display: flex; align-items: center; gap: 20px;">
+            <img src="${item.image}" alt="${item.name}" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid var(--border-dark);">
+            <div class="cart-item-info">
+              <div class="cart-item-name tech-font" style="font-size: 13px; font-weight: 700; color: var(--text-white);">${item.name}</div>
+              <div class="cart-item-details tech-font" style="font-size: 11px; color: var(--text-gray); margin-top: 4px;">SIZE: ${item.size}</div>
+            </div>
+          </div>
+
+          <div class="cart-item-right" style="display: flex; align-items: center; gap: 40px;">
+            <div class="cart-item-quantity" style="display: flex; align-items: center; gap: 12px;">
+              <button class="qty-btn" data-action="minus" data-idx="${idx}">—</button>
+              <span class="qty-val tech-font">${item.qty}</span>
+              <button class="qty-btn" data-action="plus" data-idx="${idx}">+</button>
+            </div>
+            <div class="cart-item-price-box" style="display: flex; flex-direction: column; align-items: flex-end; min-width: 80px;">
+              <span class="cart-item-subtotal tech-font" style="font-size: 14px; font-weight: 700; color: var(--text-white);">$${item.price * item.qty}</span>
+              <button class="cart-item-remove tech-font" data-idx="${idx}" style="margin-top: 6px; background: transparent; border: none; color: var(--text-gray); cursor: pointer; font-size: 10px;">REMOVE</button>
+            </div>
+          </div>
+        `;
+        cartItemsList.appendChild(itemRow);
+      });
+
+      // Add event listeners to qty buttons and remove buttons
+      cartItemsList.querySelectorAll('.qty-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(btn.dataset.idx);
+          const action = btn.dataset.action;
+          if (action === 'plus') {
+            cart[idx].qty++;
+          } else if (action === 'minus') {
+            if (cart[idx].qty > 1) {
+              cart[idx].qty--;
+            } else {
+              cart.splice(idx, 1);
+            }
+          }
+          saveCart();
+          updateCartBadge();
+          renderCartPage();
+        });
+      });
+
+      cartItemsList.querySelectorAll('.cart-item-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(btn.dataset.idx);
+          cart.splice(idx, 1);
+          saveCart();
+          updateCartBadge();
+          renderCartPage();
+        });
+      });
+
+      // Recalculate totals
+      updateCartTotals();
+    };
+
+    const updateCartTotals = () => {
+      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const discountRate = parseFloat(localStorage.getItem('promo_discount_rate') || '0');
+      const discount = subtotal * discountRate;
+      const grandTotal = subtotal - discount;
+
+      const grandTotalEl = document.getElementById('cart-page-grand-total');
+      if (grandTotalEl) {
+        if (discountRate > 0) {
+          grandTotalEl.innerHTML = `<span style="text-decoration: line-through; color: var(--text-gray); font-size: 13px; margin-right: 10px;">$${subtotal}</span>$${grandTotal.toFixed(2)}`;
+        } else {
+          grandTotalEl.textContent = `$${subtotal}`;
+        }
+      }
+    };
+
+    // Promo Code Handler
+    const applyPromoBtn = document.getElementById('apply-promo-btn');
+    const promoInput = document.getElementById('promo-code-input');
+    const promoStatus = document.getElementById('promo-status-message');
+
+    if (applyPromoBtn && promoInput && promoStatus) {
+      applyPromoBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const code = promoInput.value.trim().toUpperCase();
+        
+        // Mock promo code check
+        if (code === 'STEALTH10') {
+          localStorage.setItem('promo_discount_rate', '0.10');
+          localStorage.setItem('applied_promo_code', 'STEALTH10');
+          promoStatus.style.color = '#00ff66';
+          promoStatus.textContent = 'PROMOCODE STEALTH10 ACTIVATED (10% OFF)';
+          updateCartTotals();
+        } else if (code === 'CALLME20') {
+          localStorage.setItem('promo_discount_rate', '0.20');
+          localStorage.setItem('applied_promo_code', 'CALLME20');
+          promoStatus.style.color = '#00ff66';
+          promoStatus.textContent = 'PROMOCODE CALLME20 ACTIVATED (20% OFF)';
+          updateCartTotals();
+        } else if (code === '') {
+          promoStatus.textContent = '';
+        } else {
+          promoStatus.style.color = '#ff0055';
+          promoStatus.textContent = 'INVALID PROMOCODE / НЕВЕРНЫЙ ПРОМОКОД';
+        }
+      });
+
+      // Restore previously applied promo code
+      const savedCode = localStorage.getItem('applied_promo_code');
+      if (savedCode) {
+        promoInput.value = savedCode;
+        promoStatus.style.color = '#00ff66';
+        promoStatus.textContent = `PROMOCODE ${savedCode} ACTIVE`;
+      }
+    }
+
+    // Checkout redirect button
+    const checkoutBtn = document.getElementById('cart-page-checkout-btn');
+    if (checkoutBtn) {
+      checkoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'checkout.html';
+      });
+    }
+
+    renderCartPage();
+  }
+
+  function setupCheckoutPage() {
+    const checkoutForm = document.getElementById('checkout-main-form');
+    if (!checkoutForm) return;
+
+    let selectedCity = null;
+    let shippingCost = 0;
+    let shippingMethodName = 'NONE';
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const discountRate = parseFloat(localStorage.getItem('promo_discount_rate') || '0');
+    const discount = subtotal * discountRate;
+    const promoCode = localStorage.getItem('applied_promo_code') || '';
+
+    // Render Order Summary (Right Column)
+    const renderCheckoutSummary = () => {
+      const summaryItemsList = document.getElementById('summary-items-list');
+      const summarySubtotal = document.getElementById('summary-subtotal');
+      const summaryPromoRow = document.getElementById('summary-promo-row');
+      const summaryPromoDiscount = document.getElementById('summary-promo-discount');
+      const summaryShipping = document.getElementById('summary-shipping');
+      const summaryTotal = document.getElementById('summary-total');
+
+      if (summaryItemsList) {
+        summaryItemsList.innerHTML = '';
+        cart.forEach(item => {
+          const itemCard = document.createElement('div');
+          itemCard.className = 'summary-item-card';
+          itemCard.innerHTML = `
+            <div class="summary-item-left">
+              <img src="${item.image}" alt="${item.name}" class="summary-item-img">
+              <div class="summary-item-info">
+                <span class="summary-item-name">${item.name}</span>
+                <span class="summary-item-meta">SIZE: ${item.size} // QTY: ${item.qty}</span>
+              </div>
+            </div>
+            <span class="summary-item-price tech-font">$${item.price * item.qty}</span>
+          `;
+          summaryItemsList.appendChild(itemCard);
+        });
+      }
+
+      if (summarySubtotal) summarySubtotal.textContent = `$${subtotal}`;
+      
+      if (discountRate > 0 && summaryPromoRow && summaryPromoDiscount) {
+        summaryPromoRow.style.display = 'flex';
+        summaryPromoDiscount.textContent = `-$${discount.toFixed(2)}`;
+      }
+
+      if (summaryShipping) {
+        summaryShipping.textContent = shippingCost > 0 ? `$${shippingCost.toFixed(2)}` : '$0';
+      }
+
+      if (summaryTotal) {
+        const grandTotal = subtotal - discount + shippingCost;
+        summaryTotal.textContent = `$${grandTotal.toFixed(2)}`;
+      }
+    };
+
+    // City Lookup Autocomplete (Nominatim OpenStreetMap)
+    const cityInput = document.getElementById('check-city');
+    const suggestionsContainer = document.getElementById('city-suggestions');
+    let debounceTimer;
+
+    if (cityInput && suggestionsContainer) {
+      cityInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        const query = cityInput.value.trim();
+        if (query.length < 2) {
+          suggestionsContainer.innerHTML = '';
+          suggestionsContainer.style.display = 'none';
+          return;
+        }
+
+        debounceTimer = setTimeout(() => {
+          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`)
+            .then(res => res.json())
+            .then(data => {
+              suggestionsContainer.innerHTML = '';
+              if (data.length === 0) {
+                suggestionsContainer.style.display = 'none';
+                return;
+              }
+
+              suggestionsContainer.style.display = 'block';
+              data.forEach(item => {
+                const city = item.address.city || item.address.town || item.address.village || item.address.state || item.display_name.split(',')[0];
+                const country = item.address.country || '';
+                const countryCode = item.address.country_code ? item.address.country_code.toUpperCase() : '';
+                const displayName = `${city}, ${country}`;
+
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.textContent = item.display_name;
+                div.addEventListener('click', () => {
+                  cityInput.value = displayName;
+                  suggestionsContainer.innerHTML = '';
+                  suggestionsContainer.style.display = 'none';
+                  
+                  selectedCity = {
+                    name: city,
+                    country: country,
+                    countryCode: countryCode,
+                    fullName: item.display_name
+                  };
+                  
+                  // Trigger Shipping method options display
+                  updateShippingMethods();
+                });
+                suggestionsContainer.appendChild(div);
+              });
+            })
+            .catch(err => {
+              console.error('Nominatim lookup failed', err);
+            });
+        }, 350);
+      });
+
+      // Close suggestions on outside click
+      document.addEventListener('click', (e) => {
+        if (e.target !== cityInput && e.target !== suggestionsContainer) {
+          suggestionsContainer.innerHTML = '';
+          suggestionsContainer.style.display = 'none';
+        }
+      });
+    }
+
+    // Shipping Methods UI Update
+    const updateShippingMethods = () => {
+      const optionsWrapper = document.getElementById('shipping-options-wrapper');
+      const methodsList = document.getElementById('shipping-methods-list');
+      const addressGroup = document.getElementById('detailed-address-group');
+      
+      if (!optionsWrapper || !methodsList || !selectedCity) return;
+
+      optionsWrapper.style.display = 'block';
+      if (addressGroup) addressGroup.style.display = 'block';
+      methodsList.innerHTML = '';
+
+      let options = [];
+      const code = selectedCity.countryCode;
+
+      if (code === 'RU') {
+        options = [
+          { id: 'sdek_pickup', title: 'Самовывоз СДЭК', desc: 'Забирать из отделения - это удобно', price: 5, name: 'SDEK PICKUP' },
+          { id: 'sdek_courier', title: 'Курьером СДЭК', desc: 'До вашей двери (1-2 дня)', price: 8, name: 'SDEK COURIER' }
+        ];
+      } else if (code === 'ID' || code === 'TH') {
+        options = [
+          { id: 'local_courier', title: 'Local Courier Service', desc: 'Direct shipping (3-5 days)', price: 10, name: 'LOCAL COURIER' }
+        ];
+      } else {
+        options = [
+          { id: 'intl_air', title: 'Air Shipping', desc: 'International Postal Service (7-14 days)', price: 20, name: 'INTERNATIONAL AIR SHIPPING' }
+        ];
+      }
+
+      options.forEach((opt, idx) => {
+        const item = document.createElement('div');
+        // Default active first option
+        const isFirst = idx === 0;
+        if (isFirst) {
+          shippingCost = opt.price;
+          shippingMethodName = opt.name;
+        }
+
+        item.className = `shipping-method-item${isFirst ? ' active' : ''}`;
+        item.dataset.id = opt.id;
+        item.dataset.price = opt.price;
+        item.dataset.name = opt.name;
+
+        item.innerHTML = `
+          <div class="custom-radio"></div>
+          <div class="shipping-info-wrapper">
+            <div class="shipping-text-block">
+              <span class="shipping-title">${opt.title}</span>
+              <span class="shipping-desc">${opt.desc}</span>
+            </div>
+            <span class="shipping-price">$${opt.price}</span>
+          </div>
+        `;
+
+        item.addEventListener('click', () => {
+          methodsList.querySelectorAll('.shipping-method-item').forEach(el => el.classList.remove('active'));
+          item.classList.add('active');
+          shippingCost = parseFloat(opt.price);
+          shippingMethodName = opt.name;
+          renderCheckoutSummary();
+        });
+
+        methodsList.appendChild(item);
+      });
+
+      renderCheckoutSummary();
+    };
+
+    // Form submit triggers
+    const submitBtnDesktop = document.getElementById('desktop-submit-btn');
+    const submitBtnMobile = document.getElementById('mobile-submit-btn');
+
+    const handleFormSubmit = async () => {
+      if (!checkoutForm.reportValidity()) return;
+
+      if (!selectedCity) {
+        alert('Please select a valid city from the autocomplete suggestions list / Пожалуйста, выберите город из списка.');
+        return;
+      }
+
+      const name = document.getElementById('check-name').value.trim();
+      const phone = document.getElementById('check-phone').value.trim();
+      const email = document.getElementById('check-email').value.trim();
+      const streetAddress = document.getElementById('check-address').value.trim();
+      const finalAmount = subtotal - discount + shippingCost;
+
+      const formattedAddress = `${selectedCity.fullName}, [METHOD: ${shippingMethodName}], Street: ${streetAddress}`;
+
+      // Show loading state
+      const btns = [submitBtnDesktop, submitBtnMobile];
+      btns.forEach(btn => {
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'CREATING INVOICE...';
+        }
+      });
+
+      try {
+        const response = await fetch('/api/create-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            items: cart,
+            totalUSD: finalAmount,
+            name,
+            phone,
+            social: '', // Telegram username
+            email,
+            address: formattedAddress,
+            promoCode: promoCode
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.error) {
+          throw new Error(result.error || 'Failed to generate payment.');
+        }
+
+        // Clear cart
+        cart = [];
+        saveCart();
+        localStorage.removeItem('applied_promo_code');
+        localStorage.removeItem('promo_discount_rate');
+
+        if (result.paymentUrl) {
+          window.location.href = result.paymentUrl;
+        } else {
+          throw new Error('Payment URL not received.');
+        }
+      } catch (err) {
+        alert(`Checkout Error: ${err.message}`);
+        btns.forEach(btn => {
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'CONFIRM ORDER / ПОДТВЕРДИТЬ ЗАКАЗ';
+          }
+        });
+      }
+    };
+
+    if (submitBtnDesktop) {
+      submitBtnDesktop.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleFormSubmit();
+      });
+    }
+
+    checkoutForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleFormSubmit();
+    });
+
+    renderCheckoutSummary();
+  }
 
   // Setup Drawer close and overlay triggers
   const drawerCloseBtn = document.getElementById('cart-drawer-close');
@@ -573,47 +1070,17 @@ const init = () => {
   if (cartBtn) {
     cartBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      openCartDrawer();
+      window.location.href = 'cart.html';
     });
   }
 
-  // Add to Cart Button (on page)
-  const addCartBtn = document.getElementById('add-to-cart-btn');
-  if (addCartBtn) {
-    addCartBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      addToCart(productId, selectedSize);
-    });
-  }
-
-  // Checkout Form Submission (BUY NOW)
-  if (orderForm) {
-    orderForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById('cust-name').value.trim();
-      const phone = document.getElementById('cust-phone').value.trim();
-      const social = document.getElementById('cust-social').value.trim();
-      const email = document.getElementById('cust-email').value.trim();
-      const address = document.getElementById('cust-address').value.trim();
-
-      const submitBtn = orderForm.querySelector('button[type="submit"]');
-
-      // Add current product to cart silently if empty
-      if (cart.length === 0) {
-        addToCart(productId, selectedSize, false);
-      }
-
-      processCheckout(name, phone, social, email, address, submitBtn);
-    });
-  }
-
-  // Initialize Cart display on page load
+  // Initialize Page display
   updateCartBadge();
-  renderCartItems();
-  setupCartCheckout();
   setupProductSlider();
   setupAccordions();
+  updateStepperButton();
+  setupCartPage();
+  setupCheckoutPage();
 
   // ==========================================================================
   // Subtle Glitch Pixel Cursor Trail System
