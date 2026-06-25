@@ -151,23 +151,79 @@ const init = () => {
       });
     }
 
-    // Update Primary Photo Column
+    // Update Primary Photo Column (with Gallery and Slider)
     const mediaColumn = document.getElementById('product-media-column');
     if (mediaColumn) {
       mediaColumn.innerHTML = '';
-      data.images.forEach(imgSrc => {
-        const container = document.createElement('div');
-        container.className = 'primary-photo-container';
+      
+      const galleryWrapper = document.createElement('div');
+      galleryWrapper.className = 'gallery-wrapper';
+      
+      const thumbnailsContainer = document.createElement('div');
+      thumbnailsContainer.className = 'thumbnails-container';
+      thumbnailsContainer.id = 'thumbnails-container';
+      
+      data.images.forEach((imgSrc, idx) => {
+        const thumbItem = document.createElement('div');
+        thumbItem.className = `thumb-item${idx === 0 ? ' active' : ''}`;
+        thumbItem.setAttribute('data-index', idx);
         
         const img = document.createElement('img');
         img.src = imgSrc;
-        img.alt = data.name;
-        img.className = 'primary-photo';
-        img.loading = 'lazy';
+        img.alt = `Thumb ${idx + 1}`;
         
-        container.appendChild(img);
-        mediaColumn.appendChild(container);
+        thumbItem.appendChild(img);
+        thumbnailsContainer.appendChild(thumbItem);
       });
+      
+      const productSlider = document.createElement('div');
+      productSlider.className = 'product-slider';
+      productSlider.id = 'product-slider';
+      
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'slider-arrow prev';
+      prevBtn.id = 'slider-prev';
+      prevBtn.setAttribute('aria-label', 'Previous Photo');
+      prevBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7" /></svg>';
+      
+      const sliderTrack = document.createElement('div');
+      sliderTrack.className = 'slider-track';
+      sliderTrack.id = 'slider-track';
+      
+      data.images.forEach((imgSrc, idx) => {
+        const slide = document.createElement('div');
+        slide.className = 'slide';
+        
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.alt = `${data.name} View ${idx + 1}`;
+        img.className = 'primary-photo';
+        
+        slide.appendChild(img);
+        sliderTrack.appendChild(slide);
+      });
+      
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'slider-arrow next';
+      nextBtn.id = 'slider-next';
+      nextBtn.setAttribute('aria-label', 'Next Photo');
+      nextBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7" /></svg>';
+      
+      const sliderCounter = document.createElement('div');
+      sliderCounter.className = 'slider-counter tech-font';
+      sliderCounter.id = 'slider-counter';
+      const formattedTotal = String(data.images.length).padStart(2, '0');
+      sliderCounter.textContent = `[ 01 // ${formattedTotal} ]`;
+      
+      productSlider.appendChild(prevBtn);
+      productSlider.appendChild(sliderTrack);
+      productSlider.appendChild(nextBtn);
+      productSlider.appendChild(sliderCounter);
+      
+      galleryWrapper.appendChild(thumbnailsContainer);
+      galleryWrapper.appendChild(productSlider);
+      
+      mediaColumn.appendChild(galleryWrapper);
     }
 
     // Toggle Street/Lifestyle Gallery (Only visible for the core hoodie item)
@@ -1392,7 +1448,7 @@ const init = () => {
       
       if (nameField) nameField.value = "Gleb Kuznets";
       if (phoneField) phoneField.value = "+7 (999) 123-45-67";
-      if (emailField) emailField.value = "glebkuznets@gmail.com";
+      if (emailField) emailField.value = "test-buyer@gmail.com";
       if (addressField) addressField.value = "Baker Street 221B, apt. 4";
       
       if (cityField) {
