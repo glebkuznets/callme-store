@@ -490,7 +490,7 @@ const init = () => {
       const result = await response.json();
 
       if (!response.ok || result.error) {
-        throw new Error(result.error || 'Failed to create payment link.');
+        throw new Error(result.details || result.error || 'Failed to create payment link.');
       }
 
       // Clear cart on success
@@ -1015,7 +1015,7 @@ const init = () => {
         const result = await response.json();
 
         if (!response.ok || result.error) {
-          throw new Error(result.error || 'Failed to generate payment.');
+          throw new Error(result.details || result.error || 'Failed to generate payment.');
         }
 
         // Clear cart
