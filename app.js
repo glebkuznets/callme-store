@@ -471,7 +471,7 @@ const init = () => {
     });
 
     try {
-      const response = await fetch('/api/create-payment', {
+      const response = await fetch('https://astonishing-bunny-4408f5.netlify.app/api/create-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -995,7 +995,7 @@ const init = () => {
       });
 
       try {
-        const response = await fetch('/api/create-payment', {
+        const response = await fetch('https://astonishing-bunny-4408f5.netlify.app/api/create-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
