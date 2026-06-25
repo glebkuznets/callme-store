@@ -1401,8 +1401,90 @@ body.stealth-mode .center-logo-container {
 }
 
 /* ==========================================================================
-   Checkout Page Layout
+   Checkout Page Layout (Sidebar Variant)
    ========================================================================== */
+
+/* Checkout sidebar content — overrides product-sidebar sticky behavior */
+.checkout-sidebar-content {
+  width: 100%;
+}
+
+.checkout-sidebar-content .checkout-main-form {
+  width: 100%;
+}
+
+.checkout-sidebar-content .checkout-form-section {
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 24px;
+}
+
+.checkout-sidebar-content .checkout-form-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 24px;
+}
+
+.checkout-sidebar-content .section-title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  color: var(--text-white);
+  border-left: 2px solid var(--text-white);
+  padding-left: 10px;
+}
+
+/* Inline order summary at the bottom of the sidebar */
+.checkout-summary-inline {
+  border-top: 1px solid var(--border-dark);
+  padding-top: 24px;
+  margin-top: 8px;
+}
+
+.checkout-summary-inline .summary-title {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  border-bottom: 1px solid var(--border-dark);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.checkout-summary-inline .summary-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.checkout-summary-inline .summary-pricing-rows {
+  border-top: 1px solid var(--border-dark);
+  padding-top: 16px;
+  margin-bottom: 0;
+}
+
+.checkout-summary-inline .price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-gray);
+  margin-bottom: 10px;
+}
+
+.checkout-summary-inline .price-row.total-row {
+  border-top: 1px solid var(--border-dark);
+  padding-top: 14px;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--text-white);
+  margin-bottom: 0;
+}
+
+/* Legacy checkout page layout (kept for backward compatibility) */
 .checkout-grid-container {
   min-height: calc(100vh - 75px);
   padding: 120px 24px 60px;

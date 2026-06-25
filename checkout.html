@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CALL ME — CHECKOUT / ОФОРМЛЕНИЕ</title>
   <meta name="description" content="CALL ME — Checkout Page">
-  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body class="stealth-mode">
 
@@ -31,20 +31,68 @@
     </div>
   </nav>
 
-  <!-- Two-Column Checkout Grid -->
-  <main class="checkout-grid-container">
-    <div class="checkout-main-content">
-      
-      <!-- Left Column: Checkout Fields Form -->
-      <section class="checkout-form-column">
-        <div class="checkout-page-header">
+  <!-- Main Store Split Grid (same as product/cart pages) -->
+  <main class="main-content">
+    
+    <!-- Left Column: Product Photos Gallery (Thumbnails + Main Slide Viewer) -->
+    <section class="media-column" id="product-media-column">
+      <div class="gallery-wrapper">
+        <!-- Vertical Thumbnails Column -->
+        <div class="thumbnails-container" id="thumbnails-container">
+          <div class="thumb-item active" data-index="0">
+            <img src="assets/images/studio/studio_1.jpg" alt="Thumb 1">
+          </div>
+          <div class="thumb-item" data-index="1">
+            <img src="assets/images/studio/studio_2.jpg" alt="Thumb 2">
+          </div>
+          <div class="thumb-item" data-index="2">
+            <img src="assets/images/studio/studio_3.jpg" alt="Thumb 3">
+          </div>
+          <div class="thumb-item" data-index="3">
+            <img src="assets/images/studio/studio_4.jpg" alt="Thumb 4">
+          </div>
+          <div class="thumb-item" data-index="4">
+            <img src="assets/images/studio/studio_5.jpg" alt="Thumb 5">
+          </div>
+          <div class="thumb-item" data-index="5">
+            <img src="assets/images/studio/studio_6.jpg" alt="Thumb 6">
+          </div>
+        </div>
+        
+        <!-- Main Slider Viewer -->
+        <div class="product-slider" id="product-slider">
+          <button class="slider-arrow prev" id="slider-prev" aria-label="Previous Photo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <div class="slider-track" id="slider-track">
+            <div class="slide"><img src="assets/images/studio/studio_1.jpg" alt="HOODIE ON STEALTH FRONT VIEW" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_2.jpg" alt="HOODIE ON STEALTH FLATLAY POCKETS" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_3.jpg" alt="HOODIE ON STEALTH ZIPPER CLOSEUP" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_4.jpg" alt="HOODIE ON STEALTH HIDDEN STORAGE" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_5.jpg" alt="HOODIE ON STEALTH EMBROIDERY CLOSEUP" class="primary-photo"></div>
+            <div class="slide"><img src="assets/images/studio/studio_6.jpg" alt="HOODIE ON STEALTH BACKPRINT TEXTURE" class="primary-photo"></div>
+          </div>
+          <button class="slider-arrow next" id="slider-next" aria-label="Next Photo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7" /></svg>
+          </button>
+          <div class="slider-counter tech-font" id="slider-counter">[ 01 // 06 ]</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Checkout Form + Order Summary -->
+    <section class="product-sidebar">
+      <div class="checkout-sidebar-content">
+
+        <!-- Back Link -->
+        <div class="checkout-page-header" style="margin-bottom: 20px;">
           <a href="cart.html" class="back-link tech-font">&lt; BACK TO CART / В КОРЗИНУ</a>
         </div>
 
-        <!-- Authorization Block (decorative / matching Solution style) -->
+        <!-- Authorization Block -->
         <div class="checkout-auth-banner tech-font">
           AUTHORIZATION // АВТОРИЗАЦИЯ
-          <button type="button" class="auth-btn">LOGIN OR REGISTER / ВОЙТИ ИЛИ ЗАРЕГИСТРИРОВАТЬСЯ</button>
+          <button type="button" class="auth-btn">LOGIN / ВОЙТИ</button>
         </div>
 
         <form id="checkout-main-form" class="checkout-main-form">
@@ -116,17 +164,10 @@
               </label>
             </div>
           </div>
-
-          <!-- Checkout Big Button (Mobile only / hidden on desktop) -->
-          <button type="submit" class="buy-button mobile-checkout-btn tech-font" id="mobile-submit-btn">
-            CONFIRM ORDER / ПОДТВЕРДИТЬ ЗАКАЗ
-          </button>
         </form>
-      </section>
 
-      <!-- Right Column: Sticky Summary Sidebar -->
-      <section class="checkout-summary-column">
-        <div class="summary-card-sticky">
+        <!-- Order Summary Card -->
+        <div class="checkout-summary-inline">
           <h3 class="summary-title tech-font">ORDER SUMMARY / ВАШ ЗАКАЗ</h3>
 
           <!-- Items list -->
@@ -154,20 +195,37 @@
             </div>
           </div>
 
-          <!-- Checkout Button (Desktop) -->
-          <button type="button" class="buy-button desktop-checkout-btn tech-font" id="desktop-submit-btn">
+          <!-- Checkout Button -->
+          <button type="button" class="buy-button tech-font" id="desktop-submit-btn" style="width: 100%; margin-top: 20px;">
             CONFIRM ORDER / ПОДТВЕРДИТЬ ЗАКАЗ
           </button>
         </div>
-      </section>
 
-    </div>
+      </div>
+    </section>
+
   </main>
+
+  <!-- Success Overlay Notification -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-box">
+      <h3 class="tech-font">ORDER CONFIRMED</h3>
+      <p class="success-desc">
+        Спасибо за заказ, <span id="success-buyer-name"></span>. Информация о заказе обработана. Подтвердите заказ по ссылке ниже.
+      </p>
+      <a href="" target="_blank" class="success-btn" id="tg-redirect-link">
+        CONFIRM IN TELEGRAM
+      </a>
+      <button class="size-btn" style="width: 100%; margin-top: 10px;" id="close-success-btn">
+        CLOSE
+      </button>
+    </div>
+  </div>
 
   <!-- Canvas for Iridescent Glitch Cursor Trail -->
   <canvas id="cursor-trail" class="cursor-trail"></canvas>
 
-  <script src="products_data.js?v=14"></script>
-  <script src="app.js?v=14"></script>
+  <script src="products_data.js?v=15"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>
