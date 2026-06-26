@@ -130,6 +130,31 @@ exports.handler = async (event, context) => {
 
     if (!lavaResponse.ok || !lavaResult.paymentUrl) {
       console.error('Lava.top API error response:', lavaResult);
+
+      // Send Telegram notification on failure
+      const tgBotToken = process.env.TELEGRAM_BOT_TOKEN;
+      const tgChatId = process.env.TELEGRAM_CHAT_ID;
+      if (tgBotToken && tgChatId) {
+        try {
+          let itemsText = items.map((item, idx) => `${idx + 1}. ${item.name} // SIZE: ${item.size} // QTY: ${item.qty} // $${item.price * item.qty}`).join('\n');
+          const tgMessage = `⚠️ CHECKOUT ATTEMPT FAILED // LAVA.TOP ERROR\n\n` +
+                            `▫️ REASON: ${lavaResult.message || JSON.stringify(lavaResult)}\n` +
+                            `▫️ TOTAL: $${totalUSD}\n` +
+                            `▫️ ITEMS:\n${itemsText}\n\n` +
+                            `▫️ BUYER: ${name}\n` +
+                            `▫️ EMAIL: ${email}\n` +
+                            `▫️ PHONE: ${phone}\n` +
+                            `▫️ SOCIAL/TG: ${social}\n` +
+                            `▫️ ADDRESS: ${address}`;
+          await httpsRequest(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          }, { chat_id: tgChatId, text: tgMessage });
+        } catch (tgErr) {
+          console.warn("Failed to send telegram fail notification:", tgErr);
+        }
+      }
+
       return {
         statusCode: 400,
         headers: jsonHeaders,
