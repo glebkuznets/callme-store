@@ -1,4 +1,5 @@
 const https = require('https');
+const crypto = require('crypto');
 
 // Helper function for version-agnostic HTTPS requests in Node.js
 function httpsRequest(urlStr, options, postData) {
@@ -82,11 +83,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    console.log("DEBUG ENV: LAVA_OFFER_ID =", process.env.LAVA_OFFER_ID ? `${process.env.LAVA_OFFER_ID.slice(0, 6)}...` : "DEFAULT");
-    console.log("DEBUG ENV: TG_BOT_TOKEN =", process.env.TELEGRAM_BOT_TOKEN ? `${process.env.TELEGRAM_BOT_TOKEN.slice(0, 6)}...` : "NOT_SET");
-    console.log("DEBUG ENV: TG_CHAT_ID =", process.env.TELEGRAM_CHAT_ID ? process.env.TELEGRAM_CHAT_ID : "NOT_SET");
-
-    const { items, totalUSD, name, email, phone, social, address, promoCode } = JSON.parse(event.body);
+    const { items, totalUSD, name, email, phone, social, address, promoCode, paymentMethod } = JSON.parse(event.body);
 
     if (!items || !totalUSD || !email) {
       return {
@@ -96,62 +93,107 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Lava.top Configuration
-    const lavaApiKey = process.env.LAVA_API_KEY || 'DhqQfPXePVnHyHl5WX3EPDbu1pYxuWKDLmIzDCtH5cMZ0crVUwwkaFJnvWQjksvW';
-    let offerId = process.env.LAVA_OFFER_ID || '1a07eb81-3aea-4f77-9498-2d56e8e3be2d';
-    
-    // Override if Netlify env variable was set to the incorrect product ID
-    if (offerId === 'd9623c32-e760-45b0-ba30-e28a9bef97e9') {
-      offerId = '1a07eb81-3aea-4f77-9498-2d56e8e3be2d';
-    }
+    const tgBotToken = process.env.TELEGRAM_BOT_TOKEN;
+    const tgChatId = process.env.TELEGRAM_CHAT_ID;
+    const activeMethod = paymentMethod || 'cryptomus';
 
-    // Prepare JSON payload for gate.lava.top api v3
-    const requestPayload = {
-      email: email,
-      offerId: offerId,
-      currency: 'USD',
-      amount: parseFloat(totalUSD)
-    };
+    console.log(`Processing checkout. Method: ${activeMethod}. Total: $${totalUSD}`);
+    console.log("TG_BOT_TOKEN =", tgBotToken ? "SET" : "NOT_SET");
+    console.log("TG_CHAT_ID =", tgChatId ? tgChatId : "NOT_SET");
 
-    if (promoCode) {
-      requestPayload.promoCode = promoCode;
-    }
+    // --------------------------------------------------------------------------
+    // FLOW 1: Pickup in Moscow
+    // --------------------------------------------------------------------------
+    if (activeMethod === 'pickup') {
+      const orderId = `CM-PK-${Date.now()}`;
+      const botUsername = 'callmecash9_bot'; // Replace with your actual bot username
+      const paymentUrl = `https://t.me/${botUsername}?start=pickup_${orderId}`;
 
-    // Call Lava.top Public API (v3/invoice) to generate invoice contract using our HTTPS helper
-    const lavaResponse = await httpsRequest('https://gate.lava.top/api/v3/invoice', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': lavaApiKey
-      }
-    }, requestPayload);
-
-    const lavaResult = lavaResponse.json();
-
-    if (!lavaResponse.ok || !lavaResult.paymentUrl) {
-      console.error('Lava.top API error response:', lavaResult);
-
-      // Send Telegram notification on failure
-      const tgBotToken = process.env.TELEGRAM_BOT_TOKEN;
-      const tgChatId = process.env.TELEGRAM_CHAT_ID;
       if (tgBotToken && tgChatId) {
         try {
           let itemsText = items.map((item, idx) => `${idx + 1}. ${item.name} // SIZE: ${item.size} // QTY: ${item.qty} // $${item.price * item.qty}`).join('\n');
-          const tgMessage = `⚠️ CHECKOUT ATTEMPT FAILED // LAVA.TOP ERROR\n\n` +
-                            `▫️ REASON: ${lavaResult.message || JSON.stringify(lavaResult)}\n` +
+          const tgMessage = `🚨 NEW PICKUP ORDER INITIATED // САМОВЫВОЗ\n\n` +
+                            `▫️ ORDER ID: ${orderId}\n` +
                             `▫️ TOTAL: $${totalUSD}\n` +
                             `▫️ ITEMS:\n${itemsText}\n\n` +
                             `▫️ BUYER: ${name}\n` +
                             `▫️ EMAIL: ${email}\n` +
                             `▫️ PHONE: ${phone}\n` +
-                            `▫️ SOCIAL/TG: ${social}\n` +
-                            `▫️ ADDRESS: ${address}`;
+                            `▫️ ADDRESS: ${address}\n` +
+                            `▫️ PROMO CODE: ${promoCode || 'NONE'}`;
+
           await httpsRequest(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
           }, { chat_id: tgChatId, text: tgMessage });
         } catch (tgErr) {
-          console.warn("Failed to send telegram fail notification:", tgErr);
+          console.warn("Failed to send telegram pickup notification:", tgErr);
+        }
+      }
+
+      return {
+        statusCode: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({ paymentUrl, invoiceId: orderId, tgConfigured: !!(tgBotToken && tgChatId) }),
+      };
+    }
+
+    // --------------------------------------------------------------------------
+    // FLOW 2: Cryptomus Payment
+    // --------------------------------------------------------------------------
+    const cryptomusApiKey = process.env.CRYPTOMUS_API_KEY || 'DhqQfPXePVnHyHl5WX3EPDbu1pYxuWKDLmIzDCtH5cMZ0crVUwwkaFJnvWQjksvW'; // Replace or load from env
+    const cryptomusMerchantUuid = process.env.CRYPTOMUS_MERCHANT_UUID || '1a07eb81-3aea-4f77-9498-2d56e8e3be2d'; // Replace or load from env
+    
+    const orderId = `CM-${Date.now()}`;
+
+    // Payload parameters for Cryptomus API (v1/payment)
+    const requestPayload = {
+      amount: parseFloat(totalUSD).toFixed(2),
+      currency: 'USD',
+      order_id: orderId,
+      url_success: `https://astonishing-bunny-4408f5.netlify.app/product.html?order=success&id=${orderId}`
+    };
+
+    // Calculate Cryptomus Signature: md5(base64(JSON.stringify(payload)) + cryptomusApiKey)
+    const payloadJsonString = JSON.stringify(requestPayload);
+    const base64Payload = Buffer.from(payloadJsonString).toString('base64');
+    const signature = crypto.createHash('md5').update(base64Payload + cryptomusApiKey).digest('hex');
+
+    console.log("Cryptomus signature generated successfully.");
+
+    // Call Cryptomus REST API
+    const response = await httpsRequest('https://api.cryptomus.com/v1/payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'merchant': cryptomusMerchantUuid,
+        'sign': signature
+      }
+    }, requestPayload);
+
+    const result = response.json();
+
+    if (!response.ok || !result.result || !result.result.url) {
+      console.error('Cryptomus API error response:', result);
+
+      if (tgBotToken && tgChatId) {
+        try {
+          let itemsText = items.map((item, idx) => `${idx + 1}. ${item.name} // SIZE: ${item.size} // QTY: ${item.qty} // $${item.price * item.qty}`).join('\n');
+          const tgMessage = `⚠️ CHECKOUT ATTEMPT FAILED // CRYPTOMUS ERROR\n\n` +
+                            `▫️ REASON: ${result.message || JSON.stringify(result)}\n` +
+                            `▫️ TOTAL: $${totalUSD}\n` +
+                            `▫️ ITEMS:\n${itemsText}\n\n` +
+                            `▫️ BUYER: ${name}\n` +
+                            `▫️ EMAIL: ${email}\n` +
+                            `▫️ PHONE: ${phone}\n` +
+                            `▫️ ADDRESS: ${address}`;
+
+          await httpsRequest(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          }, { chat_id: tgChatId, text: tgMessage });
+        } catch (tgErr) {
+          console.warn("Failed to send telegram checkout failure notification:", tgErr);
         }
       }
 
@@ -159,35 +201,30 @@ exports.handler = async (event, context) => {
         statusCode: 400,
         headers: jsonHeaders,
         body: JSON.stringify({ 
-          error: 'Failed to create invoice with Lava.top.', 
-          details: lavaResult.message || JSON.stringify(lavaResult) 
+          error: 'Failed to create invoice with Cryptomus.', 
+          details: result.message || JSON.stringify(result) 
         }),
       };
     }
 
-    const paymentUrl = lavaResult.paymentUrl;
-    const invoiceId = lavaResult.id;
+    const paymentUrl = result.result.url;
+    const invoiceId = result.result.uuid;
 
-    // Send transaction log details to Telegram for the merchant
-    const tgBotToken = process.env.TELEGRAM_BOT_TOKEN;
-    const tgChatId = process.env.TELEGRAM_CHAT_ID;
-    
+    // Send order transaction log details to Telegram for the merchant
     if (tgBotToken && tgChatId) {
       try {
         let itemsText = items.map((item, idx) => `${idx + 1}. ${item.name} // SIZE: ${item.size} // QTY: ${item.qty} // $${item.price * item.qty}`).join('\n');
-        const tgMessage = `🚨 NEW INVOICE GENERATED // LAVA.TOP\n\n` +
+        const tgMessage = `🚨 NEW CRYPTO INVOICE GENERATED // CRYPTOMUS\n\n` +
                           `▫️ INVOICE ID: ${invoiceId}\n` +
                           `▫️ TOTAL: $${totalUSD}\n` +
                           `▫️ ITEMS:\n${itemsText}\n\n` +
                           `▫️ BUYER: ${name}\n` +
                           `▫️ EMAIL: ${email}\n` +
                           `▫️ PHONE: ${phone}\n` +
-                          `▫️ SOCIAL/TG: ${social}\n` +
                           `▫️ ADDRESS: ${address}\n` +
                           `▫️ PROMO CODE: ${promoCode || 'NONE'}\n\n` +
                           `▫️ PAYMENT LINK: ${paymentUrl}`;
 
-        // Await telegram notify to prevent serverless function termination before request completes
         await httpsRequest(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }

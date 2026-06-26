@@ -839,6 +839,90 @@ const init = () => {
     const discount = subtotal * discountRate;
     const promoCode = localStorage.getItem('applied_promo_code') || '';
 
+    // Toggle fields based on payment method selection
+    const paymentMethods = document.getElementsByName('payment-method');
+    const cityInput = document.getElementById('check-city');
+    const addressInput = document.getElementById('check-address');
+    const shippingOptionsWrapper = document.getElementById('shipping-options-wrapper');
+    const detailedAddressGroup = document.getElementById('detailed-address-group');
+    const submitBtnDesktop = document.getElementById('desktop-submit-btn');
+    const submitBtnMobile = document.getElementById('mobile-submit-btn');
+
+    const updateCheckoutFormFields = () => {
+      let activeMethod = 'cryptomus';
+      paymentMethods.forEach(rad => {
+        if (rad.checked) {
+          activeMethod = rad.value;
+          rad.closest('.radio-label').classList.add('active');
+        } else {
+          rad.closest('.radio-label').classList.remove('active');
+        }
+      });
+
+      if (activeMethod === 'cryptomus') {
+        if (cityInput) {
+          cityInput.required = true;
+          if (cityInput.value === 'Москва (Самовывоз)') {
+            cityInput.value = '';
+            selectedCity = null;
+          }
+        }
+        if (addressInput) {
+          addressInput.required = true;
+          if (addressInput.value === 'Самовывоз') {
+            addressInput.value = '';
+          }
+        }
+        if (shippingOptionsWrapper) {
+          shippingOptionsWrapper.style.display = selectedCity ? 'block' : 'none';
+        }
+        if (detailedAddressGroup) {
+          detailedAddressGroup.style.display = selectedCity ? 'block' : 'none';
+        }
+        
+        shippingCost = selectedCity ? (selectedCity.cost || 0) : 0;
+        
+        const text = 'CONFIRM ORDER / ПОДТВЕРДИТЬ ЗАКАЗ';
+        if (submitBtnDesktop) submitBtnDesktop.textContent = text;
+        if (submitBtnMobile) submitBtnMobile.textContent = text;
+      } else if (activeMethod === 'pickup') {
+        if (cityInput) {
+          cityInput.required = false;
+          cityInput.value = 'Москва (Самовывоз)';
+        }
+        if (addressInput) {
+          addressInput.required = false;
+          addressInput.value = 'Самовывоз';
+        }
+        if (shippingOptionsWrapper) shippingOptionsWrapper.style.display = 'none';
+        if (detailedAddressGroup) detailedAddressGroup.style.display = 'none';
+        
+        shippingCost = 0;
+        shippingMethodName = 'PICKUP';
+        
+        const text = 'CONFIRM PICKUP / ПОДТВЕРДИТЬ САМОВЫВОЗ';
+        if (submitBtnDesktop) submitBtnDesktop.textContent = text;
+        if (submitBtnMobile) submitBtnMobile.textContent = text;
+      } else if (activeMethod === 'whatsapp') {
+        if (cityInput) cityInput.required = false;
+        if (addressInput) addressInput.required = false;
+        if (shippingOptionsWrapper) shippingOptionsWrapper.style.display = 'none';
+        if (detailedAddressGroup) detailedAddressGroup.style.display = 'none';
+        
+        shippingCost = 0;
+        
+        const text = 'DISCUSS IN WHATSAPP / ОФОРМИТЬ В WHATSAPP';
+        if (submitBtnDesktop) submitBtnDesktop.textContent = text;
+        if (submitBtnMobile) submitBtnMobile.textContent = text;
+      }
+
+      renderCheckoutSummary();
+    };
+
+    paymentMethods.forEach(rad => {
+      rad.addEventListener('change', updateCheckoutFormFields);
+    });
+
     // Render Order Summary (Right Column)
     const renderCheckoutSummary = () => {
       const summaryItemsList = document.getElementById('summary-items-list');
@@ -1026,6 +1110,25 @@ const init = () => {
     const submitBtnMobile = document.getElementById('mobile-submit-btn');
 
     const handleFormSubmit = async () => {
+      const activeMethodInput = document.querySelector('input[name="payment-method"]:checked');
+      const activeMethod = activeMethodInput ? activeMethodInput.value : 'cryptomus';
+
+      if (activeMethod === 'whatsapp') {
+        let messageText = 'Привет! Я хочу заказать:\n';
+        cart.forEach((item, idx) => {
+          messageText += `${idx + 1}. ${item.name} // РАЗМЕР: ${item.size} // КОЛ-ВО: ${item.qty}\n`;
+        });
+        messageText += 'Что делать дальше?';
+        const encodedText = encodeURIComponent(messageText);
+        window.location.href = `https://wa.me/79261895788?text=${encodedText}`;
+        return;
+      }
+
+      if (activeMethod === 'pickup') {
+        selectedCity = { fullName: 'Москва (Самовывоз)', cost: 0, countryCode: 'RU' };
+        shippingMethodName = 'PICKUP';
+      }
+
       if (!checkoutForm.reportValidity()) return;
 
       if (!selectedCity) {
@@ -1046,7 +1149,7 @@ const init = () => {
       btns.forEach(btn => {
         if (btn) {
           btn.disabled = true;
-          btn.textContent = 'CREATING INVOICE...';
+          btn.textContent = activeMethod === 'pickup' ? 'CONFIRMING PICKUP...' : 'CREATING INVOICE...';
         }
       });
 
@@ -1064,7 +1167,8 @@ const init = () => {
             social: '', // Telegram username
             email,
             address: formattedAddress,
-            promoCode: promoCode
+            promoCode: promoCode,
+            paymentMethod: activeMethod
           })
         });
 
@@ -1090,7 +1194,7 @@ const init = () => {
         btns.forEach(btn => {
           if (btn) {
             btn.disabled = false;
-            btn.textContent = 'CONFIRM ORDER / ПОДТВЕРДИТЬ ЗАКАЗ';
+            btn.textContent = activeMethod === 'pickup' ? 'CONFIRM PICKUP / ПОДТВЕРДИТЬ САМОВЫВОЗ' : 'CONFIRM ORDER / ПОДТВЕРДИТЬ ЗАКАЗ';
           }
         });
       }

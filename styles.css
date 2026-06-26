@@ -1895,11 +1895,30 @@ body.stealth-mode .center-logo-container {
   flex-shrink: 0;
 }
 
+.custom-radio {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .checkbox-label input:checked + .custom-checkbox::after {
   content: '✓';
   color: var(--text-white);
   font-size: 12px;
   font-weight: bold;
+}
+
+.radio-label input:checked + .custom-radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--text-white);
+  border-radius: 50%;
 }
 
 .checkbox-text,
