@@ -82,6 +82,10 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    console.log("DEBUG ENV: LAVA_OFFER_ID =", process.env.LAVA_OFFER_ID ? `${process.env.LAVA_OFFER_ID.slice(0, 6)}...` : "DEFAULT");
+    console.log("DEBUG ENV: TG_BOT_TOKEN =", process.env.TELEGRAM_BOT_TOKEN ? `${process.env.TELEGRAM_BOT_TOKEN.slice(0, 6)}...` : "NOT_SET");
+    console.log("DEBUG ENV: TG_CHAT_ID =", process.env.TELEGRAM_CHAT_ID ? process.env.TELEGRAM_CHAT_ID : "NOT_SET");
+
     const { items, totalUSD, name, email, phone, social, address, promoCode } = JSON.parse(event.body);
 
     if (!items || !totalUSD || !email) {
